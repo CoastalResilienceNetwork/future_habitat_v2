@@ -1,2 +1,2 @@
-# maine_future_habitat
-Future Habitat Explorer for the Maine Region
+# future_habitat_v2
+Future Habitat Explorer version 2 for the new Framework
