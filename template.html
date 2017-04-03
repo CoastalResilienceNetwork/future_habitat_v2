@@ -1,0 +1,391 @@
+<style>
+
+	.sidebar-content {
+		display: flex;
+		flex-direction: row;
+    	flex: 1;
+    	flex-wrap: wrap;
+	}
+
+	.intro,
+	.main-controls,
+	.stats,
+	.additional-layers,
+	.export
+	 {
+	 	display: flex;
+	 	flex-direction: column;
+		padding: 5px 17px;
+		width: 100%;
+	}
+
+	.select-controls {
+		display: flex;
+		flex-direction: row;
+		width: 100%;
+	}
+
+	.select-controls .left-side,
+	.select-controls .right-side {
+		width: 50%;
+	}
+
+	.select-controls .left-side {
+		padding: 5px 5px 5px 17px;
+		background-color: #f5f5f5;
+	}
+
+	.select-controls .right-side {
+		background-color: #e7e7e7;
+		padding: 5px 17px 5px 5px;
+	}
+
+	.main-controls {
+		padding-top: 2px;
+	}
+
+	.main-controls .hint {
+		font-size: 12px;
+	}
+
+	.main-controls h3 {
+		margin-top: 1.2rem;
+		text-align: center;
+		font-size: 22px;
+	}
+
+	.main-controls .salt-marsh-control .slider-container {
+		display: inline-block;
+		width: 290px;
+		margin: 16px 0 16px;
+	}
+
+	.transparency-control {
+		position: relative;
+		display: inline-block;
+		margin: 12px 14px 40px;
+    	vertical-align: top;
+	}
+
+	.transparency-header {
+		position: absolute;
+		font-size: 11px;
+		top: -14px;
+    	left: -7px;
+	}
+
+	.transparency-label {
+		position: relative;
+		width: 50px;
+		border: 1px solid #aaa;
+	    font-size: 11px;
+	    padding: 0px 3px;
+	    border-right: 15px solid #aaa;
+	    cursor: pointer;
+	    user-select: none;
+	}
+
+	.transparency-label::after {
+		content: "\f0d7";
+		position: absolute;
+		right: -11px;
+		font-family: "FontAwesome";
+
+	}
+
+	.transparency-slider {
+		position: absolute;
+		display: none;
+	    width: 85px;
+	    height: 19px;
+	    right: 0;
+	    background-color: #aaa;
+	    padding: 0 10px;
+	    border-radius: 3px;
+	    border-top-right-radius: 0;
+	}
+
+	.transparency-control.open .transparency-slider {
+		display: block;
+	}
+
+	.transparency-slider .slider.ui-slider {
+		margin-top: 8px;
+		height: 4px;
+		background: none;
+    	background-color: #767676;
+	}
+
+	.transparency-slider .slider.ui-slider .ui-slider-handle {
+		width: 10px;
+		height: 10px;
+		margin-top: 1px;
+    	margin-left: -2px;
+    	background: none;
+    	background-color: #767676;
+	}
+
+	.stats {
+		background-color: #f5f5f5;
+		flex-wrap: wrap;
+		flex-direction: row;
+		padding-right: 9px;
+	}
+
+	.stats .stat {
+		position: relative;
+		background-color: #fff;
+		margin: 5px 0;
+		height: 60px;
+		cursor: pointer;
+		white-space: nowrap;
+		width: calc(50% - 8px);
+   		margin-right: 8px;
+	}
+
+	.stats .stat:first-child {
+		width: 100%;
+	}
+
+	.stats .stat-info {
+		width: 20px;
+	    position: absolute;
+	    top: 0;
+	    bottom: 0;
+		background-color: #dddddd;
+	}
+
+	.stats .stat-info .fa-info-circle {
+		color: #fff;
+	    position: absolute;
+	    top: 23px;
+	    left: 4px;
+	}
+
+	.stats .stat.active .stat-info {
+		background-color: #03a0da;
+	}
+
+	.stats .number {
+    	display: inline-block;
+	    padding-left: 30px;
+	    font-size: 20px;
+	    width: 100%;
+	    padding-top: 5px;
+	}
+
+	.stats .stat:first-child .number {
+		height: 100%;
+		line-height: 60px;
+		font-size: 24px;
+		width: 38%;
+		padding-left: 38px;
+		padding-top: 0px;
+	}
+
+	.stats .stat.active .number {
+		color: #03a0da;
+	}
+
+	.stats .description {
+		display: block;
+	    vertical-align: top;
+	    padding-left: 30px;
+	}
+
+	.stats .stat:first-child .description {
+		display: inline-block;
+		line-height: 60px;
+		font-size: 20px;
+		width: 62%;
+	}
+
+	.stats .stat.active .description {
+		color: #03a0da;
+	}
+
+	.additional-layers .layer {
+		height: 35px;
+	}
+
+	.additional-layers .layer .transparency-control {
+		display: none;
+		margin-top: 2px;
+	}
+
+	.export {
+		flex-direction: row-reverse;
+	}
+
+</style>
+
+<div class="intro">
+	Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+</div>
+
+<div class="select-controls">
+	<div class="left-side">
+		Choose region to explore:
+		<div class="chosen-wrap">
+			<select id="chosenRegion" class="chosen">
+				<option></option>
+				<option value="maine" selected>Maine</option>
+				<option value="one">Region A</option>
+				<option value="two">Region B</option>
+				<option value="three">Region C</option>
+				<option value="four">Region D</option>
+				<option value="five">Region E</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="right-side">
+		<div class="parcel-label">sample parcel</div>
+	</div>
+
+</div>
+
+<div class="main-controls">
+
+	<span class="hint">** Please zoom in to view parcel-level information</span>
+	<h3>Key Metrics for <span class="region-label">Region A</span></h3>
+
+	<div class="salt-marsh-control">
+		<strong>Salt Marsh Extent</strong>
+		<div class="slider-container">
+			<div id="salt-marsh-slider" class="slider"></div>
+		</div>
+
+		<div class="transparency-control">
+			<span class="transparency-header">Transparency</span>
+			<div class="transparency-label"><span class="value">100%</span></div>
+			<div class="transparency-slider">
+				<div class="slider"></div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="stats">
+
+	<div class="stat active current-salt-marsh">
+		<div class="stat-info">
+			<span class="fa fa-info-circle"></span>
+		</div>
+		<div class="number">
+			<span class="value">36</span> acres
+		</div>
+		<div class="description">Current Salt Marsh</div>
+	</div>
+
+	<div class="stat roadcrossing-potential">
+		<div class="stat-info">
+			<span class="fa fa-info-circle"></span>
+		</div>
+		<div class="number">
+			<span class="value">103</span> acres
+		</div>
+		<div class="description">Roadcrossing Potential</div>
+	</div>
+
+	<div class="stat inland-wetlands">
+		<div class="stat-info">
+			<span class="fa fa-info-circle"></span>
+		</div>
+		<div class="number">
+			<span class="value">48</span> acres
+		</div>
+		<div class="description">Inland Wetlands</div>
+	</div>
+
+</div>
+
+<div class="additional-layers">
+
+	<strong>Additional Layers:</strong>
+
+	<div class="layer">
+		<label class="form-component">
+			<input type="checkbox">
+			<div class="check"></div>
+			<span class="form-text">Biological hotspot</span>
+		</label>
+
+		<div class="transparency-control">
+			<span class="transparency-header">Transparency</span>
+			<div class="transparency-label"><span class="value">100%</span></div>
+			<div class="transparency-slider">
+				<div class="slider"></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="layer">
+		<label class="form-component">
+			<input type="checkbox">
+			<div class="check"></div>
+			<span class="form-text">Road crossing restoration potential</span>
+		</label>
+
+		<div class="transparency-control">
+			<span class="transparency-header">Transparency</span>
+			<div class="transparency-label"><span class="value">100%</span></div>
+			<div class="transparency-slider">
+				<div class="slider"></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="layer">
+		<label class="form-component">
+			<input type="checkbox">
+			<div class="check"></div>
+			<span class="form-text">Conservation lands</span>
+		</label>
+
+		<div class="transparency-control">
+			<span class="transparency-header">Transparency</span>
+			<div class="transparency-label"><span class="value">100%</span></div>
+			<div class="transparency-slider">
+				<div class="slider"></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="layer">
+		<label class="form-component">
+			<input type="checkbox">
+			<div class="check"></div>
+			<span class="form-text">Surface model</span>
+		</label>
+
+		<div class="transparency-control">
+			<span class="transparency-header">Transparency</span>
+			<div class="transparency-label"><span class="value">100%</span></div>
+			<div class="transparency-slider">
+				<div class="slider"></div>
+			</div>
+		</div>
+	</div>
+
+	<div class="layer">
+		<label class="form-component">
+			<input type="checkbox">
+			<div class="check"></div>
+			<span class="form-text">Inland wetland habitat</span>
+		</label>
+
+		<div class="transparency-control">
+			<span class="transparency-header">Transparency</span>
+			<div class="transparency-label"><span class="value">100%</span></div>
+			<div class="transparency-slider">
+				<div class="slider"></div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<div class="export">
+	<button class="button button-default">Save Map</button>
+</div>
