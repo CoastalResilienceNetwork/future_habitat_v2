@@ -89,6 +89,7 @@
 	.transparency-label::after {
 		content: "\f0d7";
 		position: absolute;
+		top: 0;
 		right: -11px;
 		font-family: "FontAwesome";
 
@@ -137,7 +138,7 @@
 		position: relative;
 		background-color: #fff;
 		margin: 5px 0;
-		height: 60px;
+		height: 75px;
 		cursor: pointer;
 		white-space: nowrap;
 		width: calc(50% - 8px);
@@ -146,6 +147,7 @@
 
 	.stats .stat:first-child {
 		width: 100%;
+		height: 60px;
 	}
 
 	.stats .stat-info {
@@ -221,7 +223,7 @@
 </style>
 
 <div class="intro">
-	Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+	Tidal marshes play a critical role in the aquatic food web and protect cities and towns from coastal flooding.  Use this tool to explore tidal marsh changes as sea level rises.
 </div>
 
 <div class="select-controls">
@@ -276,7 +278,7 @@
 		<div class="number">
 			<span class="value">36</span> acres
 		</div>
-		<div class="description">Current Salt Marsh</div>
+		<div class="description">Tidal Marsh Area</div>
 	</div>
 
 	<div class="stat roadcrossing-potential">
@@ -286,7 +288,7 @@
 		<div class="number">
 			<span class="value">103</span> acres
 		</div>
-		<div class="description">Roadcrossing Potential</div>
+		<div class="description">Non-Tidal Wetlands Area</div>
 	</div>
 
 	<div class="stat inland-wetlands">
@@ -294,9 +296,9 @@
 			<span class="fa fa-info-circle"></span>
 		</div>
 		<div class="number">
-			<span class="value">48</span> acres
+			<span class="value">48</span>
 		</div>
-		<div class="description">Inland Wetlands</div>
+		<div class="description">Road Crossing<br>Barriers Nearby</div>
 	</div>
 
 </div>
@@ -309,7 +311,7 @@
 		<label class="form-component">
 			<input type="checkbox">
 			<div class="check"></div>
-			<span class="form-text">Biological hotspot</span>
+			<span class="form-text">Current Conservation Lands</span>
 		</label>
 
 		<div class="transparency-control">
@@ -325,7 +327,7 @@
 		<label class="form-component">
 			<input type="checkbox">
 			<div class="check"></div>
-			<span class="form-text">Road crossing restoration potential</span>
+			<span class="form-text">Wildlife and Habitat Concentrations</span>
 		</label>
 
 		<div class="transparency-control">
@@ -341,7 +343,7 @@
 		<label class="form-component">
 			<input type="checkbox">
 			<div class="check"></div>
-			<span class="form-text">Conservation lands</span>
+			<span class="form-text">Non-Tidal Wetlands</span>
 		</label>
 
 		<div class="transparency-control">
@@ -357,7 +359,7 @@
 		<label class="form-component">
 			<input type="checkbox">
 			<div class="check"></div>
-			<span class="form-text">Surface model</span>
+			<span class="form-text">Road-Stream Crossing Barriers</span>
 		</label>
 
 		<div class="transparency-control">
@@ -373,7 +375,7 @@
 		<label class="form-component">
 			<input type="checkbox">
 			<div class="check"></div>
-			<span class="form-text">Inland wetland habitat</span>
+			<span class="form-text">High-Resolution Topography (LIDAR)</span>
 		</label>
 
 		<div class="transparency-control">

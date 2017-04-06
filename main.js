@@ -12,7 +12,7 @@ define([
 	) {
 
 		return declare(PluginBase, {
-			toolbarName: 'Future Habitat Explorer',
+			toolbarName: 'Future Habitat',
 			resizable: false,
 			width: 425,
 			size: 'custom',
@@ -81,12 +81,13 @@ define([
                 	'current',
                 	'1&nbsp;ft',
                 	'2&nbsp;ft',
-                	'3.3&nbsp;ft'
+                	'3.3&nbsp;ft',
+                	'6&nbsp;ft'
                 ];
 
                 this.$el.find("#salt-marsh-slider").slider({
             		min: 0,
-            		max: 3,
+            		max: 4,
             		range: false,
 				}).slider('pips',  { 
 					rest: 'label',
