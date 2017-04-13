@@ -1,6 +1,6 @@
 <style>
 
-	.sidebar-content {
+	.future-habitat {
 		display: flex;
 		flex-direction: row;
     	flex: 1;
@@ -39,6 +39,11 @@
 	.select-controls .right-side {
 		background-color: #e7e7e7;
 		padding: 5px 17px 5px 5px;
+	}
+
+	.select-controls .right-side #parcel-id {
+		font-size: 16px;
+    	line-height: 30px;
 	}
 
 	.main-controls {
@@ -207,8 +212,13 @@
 		color: #03a0da;
 	}
 
+	.additional-layers .description {
+		margin: 8px 0px;
+	}
+
 	.additional-layers .layer {
 		height: 35px;
+		user-select: none;
 	}
 
 	.additional-layers .layer .transparency-control {
@@ -222,173 +232,188 @@
 
 </style>
 
-<div class="intro">
-	Tidal marshes play a critical role in the aquatic food web and protect cities and towns from coastal flooding.  Use this tool to explore tidal marsh changes as sea level rises.
-</div>
+<div class="future-habitat">
 
-<div class="select-controls">
-	<div class="left-side">
-		Choose region to explore:
-		<div class="chosen-wrap">
-			<select id="chosenRegion" class="chosen">
-				<option></option>
-				<option value="maine" selected>Maine</option>
-				<option value="one">Region A</option>
-				<option value="two">Region B</option>
-				<option value="three">Region C</option>
-				<option value="four">Region D</option>
-				<option value="five">Region E</option>
-			</select>
-		</div>
+	<div class="intro">
+		Tidal marshes play a critical role in the aquatic food web and protect cities and towns from coastal flooding.  Use this tool to explore tidal marsh changes as sea level rises.
 	</div>
 
-	<div class="right-side">
-		<div class="parcel-label">sample parcel</div>
-	</div>
-
-</div>
-
-<div class="main-controls">
-
-	<span class="hint">** Please zoom in to view parcel-level information</span>
-	<h3>Key Metrics for <span class="region-label">Region A</span></h3>
-
-	<div class="salt-marsh-control">
-		<strong>Salt Marsh Extent</strong>
-		<div class="slider-container">
-			<div id="salt-marsh-slider" class="slider"></div>
-		</div>
-
-		<div class="transparency-control">
-			<span class="transparency-header">Transparency</span>
-			<div class="transparency-label"><span class="value">100%</span></div>
-			<div class="transparency-slider">
-				<div class="slider"></div>
+	<div class="select-controls">
+		<div class="left-side">
+			Choose region to explore:
+			<div class="chosen-wrap">
+				<select id="chosenRegion" class="chosen">
+					<option></option>
+					<option selected>Maine</option>
+					<option>Blue Hill Bay</option>
+					<option>Casco Bay</option>
+					<option>Cobscook - Passamaquoddy Bay</option>
+					<option>Downeast - Bold Coast</option>
+					<option>Englishman Bay - Machias Bay</option>
+					<option>Frenchman Bay</option>
+					<option>Kennebec/Androscoggin River</option>
+					<option>Muscongus Bay</option>
+					<option>Narraguagus Bay</option>
+					<option>Penobscot Bay</option>
+					<option>Saco Bay</option>
+					<option>Sheepscot Bay - Damariscotta River</option>
+					<option>South Coast</option>
+					<option>Wells Bay - Kennebunk River</option>
+				</select>
 			</div>
 		</div>
-	</div>
-</div>
 
-<div class="stats">
+		<div class="right-side">
+			<div class="parcel-label">Parcel: <br>
+			<span id="parcel-id"></span></div>
+		</div>
 
-	<div class="stat active current-salt-marsh">
-		<div class="stat-info">
-			<span class="fa fa-info-circle"></span>
-		</div>
-		<div class="number">
-			<span class="value">36</span> acres
-		</div>
-		<div class="description">Tidal Marsh Area</div>
 	</div>
 
-	<div class="stat roadcrossing-potential">
-		<div class="stat-info">
-			<span class="fa fa-info-circle"></span>
-		</div>
-		<div class="number">
-			<span class="value">103</span> acres
-		</div>
-		<div class="description">Non-Tidal Wetlands Area</div>
-	</div>
+	<div class="main-controls">
 
-	<div class="stat inland-wetlands">
-		<div class="stat-info">
-			<span class="fa fa-info-circle"></span>
-		</div>
-		<div class="number">
-			<span class="value">48</span>
-		</div>
-		<div class="description">Road Crossing<br>Barriers Nearby</div>
-	</div>
+		<span class="hint">** Please zoom in to view parcel-level information</span>
+		<h3>Key Metrics for <span class="region-label">Maine</span></h3>
 
-</div>
+		<div class="salt-marsh-control">
+			<strong>Salt Marsh Extent</strong>
+			<div class="slider-container">
+				<div id="salt-marsh-slider" class="slider"></div>
+			</div>
 
-<div class="additional-layers">
-
-	<strong>Additional Layers:</strong>
-
-	<div class="layer">
-		<label class="form-component">
-			<input type="checkbox">
-			<div class="check"></div>
-			<span class="form-text">Current Conservation Lands</span>
-		</label>
-
-		<div class="transparency-control">
-			<span class="transparency-header">Transparency</span>
-			<div class="transparency-label"><span class="value">100%</span></div>
-			<div class="transparency-slider">
-				<div class="slider"></div>
+			<div class="transparency-control" data-layer="marshHabitat">
+				<span class="transparency-header">Transparency</span>
+				<div class="transparency-label"><span class="value">100%</span></div>
+				<div class="transparency-slider">
+					<div class="slider"></div>
+				</div>
 			</div>
 		</div>
 	</div>
 
-	<div class="layer">
-		<label class="form-component">
-			<input type="checkbox">
-			<div class="check"></div>
-			<span class="form-text">Wildlife and Habitat Concentrations</span>
-		</label>
+	<div class="stats">
 
-		<div class="transparency-control">
-			<span class="transparency-header">Transparency</span>
-			<div class="transparency-label"><span class="value">100%</span></div>
-			<div class="transparency-slider">
-				<div class="slider"></div>
+		<div class="stat active current-salt-marsh">
+			<div class="stat-info">
+				<span class="fa fa-info-circle info" title="Displays the current and predicted size of tidal marshes visible on the map or selected in response to projected sea-level rise scenarios."></span>
 			</div>
+			<div class="number">
+				<span class="value">22371</span> acres
+			</div>
+			<div class="description">Tidal Marsh Area</div>
 		</div>
+
+		<div class="stat inland-wetlands">
+			<div class="stat-info">
+				<span class="fa fa-info-circle info" title="Displays current fresh water wetland areas. Indicates CURRENT CONDITIONS ONLY AND DOES NOT PREDICT potential FUTURE CONDITIONS WITH SEA LEVEL CHANGE. (Check the Non-Tidal Wetlands box below to view this information.)"></span>
+			</div>
+			<div class="number">
+				<span class="value">406231</span> acres
+			</div>
+			<div class="description">Non-Tidal Wetlands Area</div>
+		</div>
+
+		<div class="stat roadcrossing-potential">
+			<div class="stat-info">
+				<span class="fa fa-info-circle info" title="Displays surveyed road crossings that have been identified as potential stream barriers within 300 feet of selected parcels. (Check the Road-Stream Crossing Barriers box below to view this information.)"></span>
+			</div>
+			<div class="number">
+				<span class="value">2198</span>
+			</div>
+			<div class="description">Road Crossing<br>Barriers Nearby</div>
+		</div>
+
 	</div>
 
-	<div class="layer">
-		<label class="form-component">
-			<input type="checkbox">
-			<div class="check"></div>
-			<span class="form-text">Non-Tidal Wetlands</span>
-		</label>
+	<div class="additional-layers">
 
-		<div class="transparency-control">
-			<span class="transparency-header">Transparency</span>
-			<div class="transparency-label"><span class="value">100%</span></div>
-			<div class="transparency-slider">
-				<div class="slider"></div>
+		<strong>Additional Layers:</strong>
+		<div class="description">Learn more about your area of interest by selecting from these additional information layers.</div>
+
+		<div class="layer">
+			<label class="form-component">
+				<input type="checkbox" data-layer="current_conservation_lands">
+				<div class="check"></div>
+				<span class="form-text">Current Conservation Lands</span> <span class="fa fa-info-circle info" title="Displays public and private lands that are currently protected by conservation ownership or easement."></span>
+			</label>
+
+			<div class="transparency-control" data-layer="current_conservation_lands">
+				<span class="transparency-header">Transparency</span>
+				<div class="transparency-label"><span class="value">100%</span></div>
+				<div class="transparency-slider">
+					<div class="slider"></div>
+				</div>
 			</div>
 		</div>
-	</div>
 
-	<div class="layer">
-		<label class="form-component">
-			<input type="checkbox">
-			<div class="check"></div>
-			<span class="form-text">Road-Stream Crossing Barriers</span>
-		</label>
+		<div class="layer">
+			<label class="form-component">
+				<input type="checkbox" data-layer="wildlife_habitat">
+				<div class="check"></div>
+				<span class="form-text">Wildlife and Habitat Concentrations</span> <span class="fa fa-info-circle info" title="Developed by the Maine Department of Inland Fisheries and Wildlife, this layer represents the relative concentration of select wildlife and habitat values on the landscape. Its purpose is to highlight the area’s conservation values as an aid in planning."></span>
+			</label>
 
-		<div class="transparency-control">
-			<span class="transparency-header">Transparency</span>
-			<div class="transparency-label"><span class="value">100%</span></div>
-			<div class="transparency-slider">
-				<div class="slider"></div>
+			<div class="transparency-control" data-layer="wildlife_habitat">
+				<span class="transparency-header">Transparency</span>
+				<div class="transparency-label"><span class="value">100%</span></div>
+				<div class="transparency-slider">
+					<div class="slider"></div>
+				</div>
 			</div>
 		</div>
-	</div>
 
-	<div class="layer">
-		<label class="form-component">
-			<input type="checkbox">
-			<div class="check"></div>
-			<span class="form-text">High-Resolution Topography (LIDAR)</span>
-		</label>
+		<div class="layer">
+			<label class="form-component">
+				<input type="checkbox" data-layer="non_tidal_wetlands">
+				<div class="check"></div>
+				<span class="form-text">Non-Tidal Wetlands</span> <span class="fa fa-info-circle info" title="Displays current fresh water wetland areas. Indicates CURRENT CONDITIONS ONLY AND DOES NOT PREDICT potential FUTURE CONDITIONS WITH SEA LEVEL CHANGE. (Check the Non-Tidal Wetlands box below to view this information.)"></span>
+			</label>
 
-		<div class="transparency-control">
-			<span class="transparency-header">Transparency</span>
-			<div class="transparency-label"><span class="value">100%</span></div>
-			<div class="transparency-slider">
-				<div class="slider"></div>
+			<div class="transparency-control" data-layer="non_tidal_wetlands">
+				<span class="transparency-header">Transparency</span>
+				<div class="transparency-label"><span class="value">100%</span></div>
+				<div class="transparency-slider">
+					<div class="slider"></div>
+				</div>
 			</div>
 		</div>
+
+		<div class="layer">
+			<label class="form-component">
+				<input type="checkbox" data-layer="road_stream_crossing">
+				<div class="check"></div>
+				<span class="form-text">Road-Stream Crossing Barriers</span> <span class="fa fa-info-circle info" title="Displays surveyed road crossings that have been identified as potential stream barriers within 300 feet of selected parcels. (Check the Road-Stream Crossing Barriers box below to view this information.)"></span>
+			</label>
+
+			<div class="transparency-control" data-layer="road_stream_crossing">
+				<span class="transparency-header">Transparency</span>
+				<div class="transparency-label"><span class="value">100%</span></div>
+				<div class="transparency-slider">
+					<div class="slider"></div>
+				</div>
+			</div>
+		</div>
+
+		<div class="layer">
+			<label class="form-component">
+				<input type="checkbox" data-layer="lidar">
+				<div class="check"></div>
+				<span class="form-text">High-Resolution Topography (LIDAR)</span> <span class="fa fa-info-circle info" title="Displays visual representation of relative elevations based on high-accuracy measurement technology."></span>
+			</label>
+
+			<div class="transparency-control" data-layer="lidar">
+				<span class="transparency-header">Transparency</span>
+				<div class="transparency-label"><span class="value">100%</span></div>
+				<div class="transparency-slider">
+					<div class="slider"></div>
+				</div>
+			</div>
+		</div>
+
 	</div>
 
-</div>
+	<div class="export">
+		<button class="button button-default">Save Map</button>
+	</div>
 
-<div class="export">
-	<button class="button button-default">Save Map</button>
 </div>
