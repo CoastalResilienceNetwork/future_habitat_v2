@@ -7,6 +7,7 @@ define([
 	"esri/layers/WMSLayer",
 	"esri/layers/WMSLayerInfo",
 	"esri/layers/FeatureLayer",
+	"esri/layers/ImageParameters",
 	"esri/geometry/Extent",
 	"esri/SpatialReference",
 	"esri/tasks/query",
@@ -26,6 +27,7 @@ define([
 		WMSLayer,
 		WMSLayerInfo,
 		FeatureLayer,
+		ImageParameters,
 		Extent,
 		SpatialReference,
 		Query,
@@ -40,7 +42,7 @@ define([
 	) {
 
 		// TODO: Dashes, not underscores
-		// TODO: http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/14/query?where=1%3D1&returnGeometry=false&orderByFields=NAME&f=pjson
+		// TODO: Clear currently selected parcel button
 
 		return declare(PluginBase, {
 			toolbarName: 'Future Habitat',
@@ -50,6 +52,8 @@ define([
 			allowIdentifyWhenActive: false,
 			layers: {},
 			defaultExtent: new Extent(-7959275, 5087981, -7338606, 5791202, new SpatialReference({wkid: 102100})),
+			selectedParcel: null,
+			marshScenarioIdx: null,
 
 			initialize: function(frameworkParameters) {
 				declare.safeMixin(this, frameworkParameters);
@@ -89,8 +93,6 @@ define([
 				    ),
 				    new Color([30,144,255, 1])
 				);
-
-
 
 				return this;
 			},
@@ -134,6 +136,9 @@ define([
 				});
 			},
 
+			// TODO Set appropriate zoom levels for layers
+			// TODO Clean up legend labels for selected features
+			
 			activate: function() {
 				var self = this;
 
@@ -163,12 +168,48 @@ define([
 					this.map.addLayer(this.layers.marshHabitat);
 				}
 
+				if (!this.layers.marshHabitatParcels) {
+					var marshHabitatParcelsImageParameters = new ImageParameters();
+					var marshHabitatParcelsDefinitions = [];
+
+					marshHabitatParcelsDefinitions[6] = 'Parcel_ID_Unique = 0';
+					marshHabitatParcelsDefinitions[2] = 'Parcel_ID_Unique = 0';
+					marshHabitatParcelsDefinitions[3] = 'Parcel_ID_Unique = 0';
+					marshHabitatParcelsDefinitions[4] = 'Parcel_ID_Unique = 0';
+					marshHabitatParcelsDefinitions[5] = 'Parcel_ID_Unique = 0';
+					marshHabitatParcelsImageParameters.layerDefinitions = marshHabitatParcelsDefinitions;
+
+					this.layers.marshHabitatParcels = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
+						visible: true,
+						id: 'marshHabitatParcels',
+						imageParameters: marshHabitatParcelsImageParameters
+					});
+					this.layers.marshHabitatParcels.setVisibleLayers([6]);
+
+					this.map.addLayer(this.layers.marshHabitatParcels);
+				}
+ 
 				if (!this.layers.non_tidal_wetlands) {
 					this.layers.non_tidal_wetlands = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
 						visible: false
 					});
 					this.layers.non_tidal_wetlands.setVisibleLayers([8]);
 					this.map.addLayer(this.layers.non_tidal_wetlands);
+				}
+
+				if (!this.layers.non_tidal_wetlands_parcels) {
+					var non_tidal_wetlands_ImageParameters = new ImageParameters();
+					var non_tidal_wetlands_Definitions = [];
+
+					non_tidal_wetlands_Definitions[7] = 'Parcel_ID_Unique = 0';
+					non_tidal_wetlands_ImageParameters.layerDefinitions = non_tidal_wetlands_Definitions;
+
+					this.layers.non_tidal_wetlands_parcels = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
+						visible: true,
+						imageParameters: non_tidal_wetlands_ImageParameters
+					});
+					this.layers.non_tidal_wetlands_parcels.setVisibleLayers([7]);
+					this.map.addLayer(this.layers.non_tidal_wetlands_parcels);
 				}
 
 				if (!this.layers.wildlife_habitat) {
@@ -348,7 +389,17 @@ define([
 					4: 12
 				};
 
+				var scenarioMapParcels = {
+					0: 6,
+					1: 2,
+					2: 3,
+					3: 4,
+					4: 5
+				};
+
+				//this.marshScenarioIdx = idx;
 				this.layers.marshHabitat.setVisibleLayers([scenarioMap[idx]]);
+				this.layers.marshHabitatParcels.setVisibleLayers([scenarioMapParcels[idx]]);
 				this.layers.marshHabitat.refresh();
 			},
 
@@ -357,10 +408,9 @@ define([
 				this.qParcels.geometry = pt;
 				this.qtParcels.execute(this.qParcels, function(results) {
 					if (results.features.length) {
-						var parcel = results.features[0];
+						var parcel = self.selectedParcel = results.features[0];
 						var crossings = parcel.attributes.Crossings_100m_List.split(',');
 
-						console.log(crossings, parcel);
 						self.$el.find('.parcel-label').show();
 						self.$el.find('#parcel-id').html(parcel.attributes.Parcel_Name);
 						self.$el.find('.region-label').html(parcel.attributes.Parcel_Name);
@@ -373,25 +423,40 @@ define([
 						var highlightGraphic = new Graphic(parcel.geometry, self.regionSymbolHover);
 						self.parcelGraphics.add(highlightGraphic);
 
+						self.setSelectedMarshByParcel(parcel.attributes.Parcel_ID_Unique);
+
 						// TODO Potential Race condition fix where clicking on a new parcel before this finishes loading
+						// TODO Selected Barriers don't show up in legend
 						self.qCrossings.where = "SiteID = '" + crossings.join("' OR SiteID = '") + "'";
 						self.qtCrossings.execute(self.qCrossings, function(crossing_result) {
-							console.log(crossing_result);
-
 							_.each(crossing_result.features, function(feature) {
 								var crossingGraphic = new Graphic(feature.geometry, self.selectedBarrierSymbol);
 								self.parcelGraphics.add(crossingGraphic);
-							})
-						})
-
-
+							});
+						});
 
 					} else {
 						self.$el.find('.parcel-label').hide();
+						self.selectedParcel = null;
 					}
 					
 				});
+			},
+
+			setSelectedMarshByParcel: function(parcelId) {
+				var marshHabitatParcelsDefinitions = [];
+				marshHabitatParcelsDefinitions[6] = "Parcel_ID_Unique = " + parcelId;
+				marshHabitatParcelsDefinitions[2] = "Parcel_ID_Unique = " + parcelId;
+				marshHabitatParcelsDefinitions[3] = "Parcel_ID_Unique = " + parcelId;
+				marshHabitatParcelsDefinitions[4] = "Parcel_ID_Unique = " + parcelId;
+				marshHabitatParcelsDefinitions[5] = "Parcel_ID_Unique = " + parcelId;
+				this.layers.marshHabitatParcels.setLayerDefinitions(marshHabitatParcelsDefinitions);
+
+				var non_tidal_wetlands_Definitions = [];
+				non_tidal_wetlands_Definitions[7] = "Parcel_ID_Unique = " + parcelId;
+				this.layers.non_tidal_wetlands_parcels.setLayerDefinitions(non_tidal_wetlands_Definitions);
 			}
+
 
 		});
 
