@@ -138,7 +138,7 @@ define([
 
 			// TODO Set appropriate zoom levels for layers
 			// TODO Clean up legend labels for selected features
-			
+
 			activate: function() {
 				var self = this;
 
@@ -180,7 +180,7 @@ define([
 					marshHabitatParcelsImageParameters.layerDefinitions = marshHabitatParcelsDefinitions;
 
 					this.layers.marshHabitatParcels = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
-						visible: true,
+						visible: false,
 						id: 'marshHabitatParcels',
 						imageParameters: marshHabitatParcelsImageParameters
 					});
@@ -205,7 +205,7 @@ define([
 					non_tidal_wetlands_ImageParameters.layerDefinitions = non_tidal_wetlands_Definitions;
 
 					this.layers.non_tidal_wetlands_parcels = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
-						visible: true,
+						visible: false,
 						imageParameters: non_tidal_wetlands_ImageParameters
 					});
 					this.layers.non_tidal_wetlands_parcels.setVisibleLayers([7]);
@@ -444,17 +444,24 @@ define([
 			},
 
 			setSelectedMarshByParcel: function(parcelId) {
-				var marshHabitatParcelsDefinitions = [];
-				marshHabitatParcelsDefinitions[6] = "Parcel_ID_Unique = " + parcelId;
-				marshHabitatParcelsDefinitions[2] = "Parcel_ID_Unique = " + parcelId;
-				marshHabitatParcelsDefinitions[3] = "Parcel_ID_Unique = " + parcelId;
-				marshHabitatParcelsDefinitions[4] = "Parcel_ID_Unique = " + parcelId;
-				marshHabitatParcelsDefinitions[5] = "Parcel_ID_Unique = " + parcelId;
-				this.layers.marshHabitatParcels.setLayerDefinitions(marshHabitatParcelsDefinitions);
+				if (parcelId) {
+					var marshHabitatParcelsDefinitions = [];
+					marshHabitatParcelsDefinitions[6] = "Parcel_ID_Unique = " + parcelId;
+					marshHabitatParcelsDefinitions[2] = "Parcel_ID_Unique = " + parcelId;
+					marshHabitatParcelsDefinitions[3] = "Parcel_ID_Unique = " + parcelId;
+					marshHabitatParcelsDefinitions[4] = "Parcel_ID_Unique = " + parcelId;
+					marshHabitatParcelsDefinitions[5] = "Parcel_ID_Unique = " + parcelId;
+					this.layers.marshHabitatParcels.setLayerDefinitions(marshHabitatParcelsDefinitions);
+					this.layers.marshHabitatParcels.setVisibility(true);
 
-				var non_tidal_wetlands_Definitions = [];
-				non_tidal_wetlands_Definitions[7] = "Parcel_ID_Unique = " + parcelId;
-				this.layers.non_tidal_wetlands_parcels.setLayerDefinitions(non_tidal_wetlands_Definitions);
+					var non_tidal_wetlands_Definitions = [];
+					non_tidal_wetlands_Definitions[7] = "Parcel_ID_Unique = " + parcelId;
+					this.layers.non_tidal_wetlands_parcels.setLayerDefinitions(non_tidal_wetlands_Definitions);
+					this.layers.non_tidal_wetlands_parcels.setVisibility(true);
+				} else {
+					this.layers.non_tidal_wetlands_parcels.setVisibility(false);
+					this.layers.marshHabitatParcels.setVisibility(false);
+				}
 			}
 
 
