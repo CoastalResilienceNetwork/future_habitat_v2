@@ -212,6 +212,13 @@ define([
 					this.map.addLayer(this.layers.non_tidal_wetlands_parcels);
 				}
 
+				if (!this.layers.current_conservation_lands) {
+					this.layers.current_conservation_lands = new ArcGISDynamicMapServiceLayer("http://cumulus-web-adapter-1827610810.us-west-1.elb.amazonaws.com/arcgis/rest/services/EasternDivision/SECUREDAREAS2014_S_A_Map_Service_2014_Public/MapServer", {
+						visible: false
+					});
+					this.map.addLayer(this.layers.current_conservation_lands);
+				}
+
 				if (!this.layers.wildlife_habitat) {
 					this.layers.wildlife_habitat = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
 						visible: false
