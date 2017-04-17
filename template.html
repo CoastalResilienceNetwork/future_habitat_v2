@@ -51,12 +51,13 @@
     	line-height: 30px;
 	}
 
-	.main-controls {
-		padding-top: 2px;
+	.select-controls .right-side .hint {
+		display: inline;
+		font-size: 12px;
 	}
 
-	.main-controls .hint {
-		font-size: 12px;
+	.main-controls {
+		padding-top: 2px;
 	}
 
 	.main-controls h3 {
@@ -68,7 +69,7 @@
 	.main-controls .salt-marsh-control .slider-container {
 		display: inline-block;
 		width: 290px;
-		margin: 16px 0 16px;
+		margin: 16px 33px;
 	}
 
 	.transparency-control {
@@ -89,13 +90,9 @@
 
 	.transparency-label {
 		position: relative;
-		/*width: 50px;*/
-		/*border: 1px solid #aaa;*/
 	    font-size: 11px;
-	    /*padding: 0px 3px;*/
 	    width: 0;
 	    padding: 0;
-	    /*border-right: 15px solid #aaa;*/
 	    cursor: pointer;
 	    user-select: none;
 	}
@@ -103,10 +100,10 @@
 	.transparency-label::after {
 		content: "\f042";
 		position: absolute;
-		top: 0;
+		top: -3px;
 		right: -11px;
 		font-family: "FontAwesome";
-		font-size: 14px;
+		font-size: 16px;
 	}
 
 	.transparency-label .value {
@@ -137,12 +134,16 @@
 	}
 
 	.transparency-slider .slider.ui-slider .ui-slider-handle {
-		width: 10px;
-		height: 10px;
-		margin-top: 1px;
-    	margin-left: -2px;
+		width: 13px;
+		height: 13px;
+    	margin-left: -7.5px;
+    	margin-top: -2px;
     	background: none;
     	background-color: #767676;
+	}
+
+	.main-controls .salt-marsh-control .transparency-control {
+		right: 30px;
 	}
 
 	.stats {
@@ -194,8 +195,16 @@
 	    position: absolute;
 	    left: 13px;
     	line-height: 60px;
-    	font-size: 20px;
+    	font-size: 18px;
 	}
+
+	.stats .number .value {
+		font-size: 22px;
+    	font-weight: bold;
+    	vertical-align: middle;
+	}
+
+
 
 	.stats .number .icon {
 		display: inline-block;
@@ -221,17 +230,12 @@
 	    background-size: 30px 30px;
 	}
 
-
-	/*.stats .stat.active .number {
-		color: #03a0da;
-	}*/
-
 	.stats .description {
 	    line-height: 24px;
-	    font-size: 19px;
+	    font-size: 18px;
 	    position: absolute;
-	    left: 200px;
-	    width: 161px;
+	    left: 196px;
+    	width: 151px;
 	    display: block;
 	    padding-top: 6px;
 	}
@@ -241,17 +245,27 @@
 	}
 
 	.additional-layers .layer {
+		position: relative;
 		height: 35px;
 		user-select: none;
 	}
 
+	.additional-layers .layer .form-component {
+		width: 100%;
+	}
+
 	.additional-layers .layer .transparency-control {
 		display: none;
-		margin-top: 2px;
+    	top: 0;
+		margin-top: 3px;
 	}
 
 	.additional-layers .info {
-		color: #266f9c
+		position: absolute;
+	    right: 0;
+	    top: 4px;
+		color: #266f9c;
+		font-size: 16px;
 	}
 
 	.export {
@@ -292,7 +306,8 @@
 		</div>
 
 		<div class="right-side">
-			<div class="parcel-label">Parcel: <br>
+			<div class="hint" style="display: none;">** Please zoom in to view parcel-level information</div>
+			<div class="parcel-label" style="display: none;">Parcel: <br>
 			<span id="parcel-id"></span></div>
 		</div>
 
@@ -300,10 +315,9 @@
 
 	<div class="main-controls">
 
-		<span class="hint">** Please zoom in to view parcel-level information</span>
 		<h3>Key Metrics for <span class="region-label">Maine</span></h3>
 
-		<div class="salt-marsh-control">
+		<div class="salt-marsh-control" data-scenario-idx="0" data-scenario-current="22371.7008" data-scenario-ft1="26799.73447" data-scenario-ft2="31742.08167" data-scenario-ft33="36201.71331" data-scenario-ft6="44494.32286" data-scenario-barriers="2198" data-scenario-wetlands="406231.696">
 			<strong>Salt Marsh Extent</strong>
 			<div class="slider-container">
 				<div id="salt-marsh-slider" class="slider"></div>
@@ -325,7 +339,7 @@
 			<div class="pill">
 				<div class="number">
 					<div class="icon grass"></div>
-					<span class="value">22,371</span> acres
+					<span class="value">22,371</span> <span class="units">acres</span>
 				</div>
 				<div class="description" style="padding-top: 18px;">Tidal Marsh Area</div>
 			</div>
@@ -338,7 +352,7 @@
 			<div class="pill">
 				<div class="number">
 					<div class="icon fish"></div>
-					<span class="value">406,231</span> acres
+					<span class="value">406,231</span> <span class="units">acres</span>
 				</div>
 				<div class="description">Non-Tidal<br>Wetlands Area</div>
 			</div>

@@ -147,6 +147,7 @@ define([
 					this.initialized = true;
 
 					// TODO Use zoomtoregion function, but need to make sure data is loaded first
+					// TODO Don't hard code initial values
 					this.map.setExtent(this.defaultExtent);
 				}
 
@@ -237,7 +238,7 @@ define([
 
 				if (!this.layers.parcels) {
 					this.layers.parcels = new VectorTileLayer("http://tiles.arcgis.com/tiles/F7DSX1DSNSiWmOqh/arcgis/rest/services/Maine_Coastal_Parcels/VectorTileServer", {
-						minScale: 288895.2771445
+						minScale: 72223.82209
 					});
 					this.map.addLayer(this.layers.parcels);
 
@@ -257,7 +258,7 @@ define([
 					this.layers.regions.on('mouse-over', function(e) {
 						if (self.map.getZoom() < 10) {
 							self.regionGraphics.clear();
-							var highlightGraphic = new Graphic(e.graphic.geometry, self.regionSymbolHover);
+							var highlightGraphic = new Graphic(e.graphic.geometry, self.regionSymbolHover, e.graphic.attributes);
 							self.regionGraphics.add(highlightGraphic);
 						}
 						
@@ -268,21 +269,50 @@ define([
 					this.map.addLayer(this.regionGraphics);
 					this.regionGraphics.on('click', function(e) {
 						if (self.map.getZoom() < 10) {
+
 							self.map.setExtent(e.graphic.geometry.getExtent());
+							self.$el.find('#chosenRegion').val(e.graphic.attributes.NAME).trigger("chosen:updated");
+
+							self.setMarshScenarioStats({
+								current: e.graphic.attributes.Current_Tidal_Marsh_Acres,
+								ft1: e.graphic.attributes.CurrentPlus1Ft_Acres,
+								ft2: e.graphic.attributes.CurrentPlus2Ft_Acres,
+								ft33: e.graphic.attributes.CurrentPlus3Ft_Acres,
+								ft6: e.graphic.attributes.CurrentPlus6Ft_Acres,
+								barriers: e.graphic.attributes.Barrier_Count,
+								wetlands: e.graphic.attributes.Non_Tidal_Wetland_Acres
+							});
 							self.regionGraphics.clear();
 						}
 					});
 
 					// TODO: Clean this up when deactivated
 					this.map.on('zoom-end', function(z) {
-						if (z.level >= 10) {
+						console.log(z.level);
+						if (z.level >= 11) {
 							self.regionGraphics.clear();
+						}
+
+						if (z.level >= 13) {
+							self.$el.find('.parcel-label').show();
+							self.$el.find('#parcel-id').show();
+							self.$el.find('.hint').hide();
+						} else {
+							self.$el.find('.parcel-label').hide();
+							self.$el.find('#parcel-id').html('').hide();
+							self.$el.find('.hint').show();
+							self.parcelGraphics.clear();
 						}
 					});
 				}
 
 				this.map.on('click', function(e) {
-					self.getParcelByPoint(e.mapPoint);
+					var zoom = self.map.getZoom();
+					if (zoom >= 13) {
+						self.getParcelByPoint(e.mapPoint);
+					}
+
+
 				});
 
 				//this.zoomToRegion('Maine');
@@ -327,6 +357,7 @@ define([
             		max: 4,
             		range: false,
             		change: function(e, ui) {
+						self.$el.find('.salt-marsh-control').attr('data-scenario-idx', ui.value);
             			self.setMarshScenario(ui.value);
             		}
 				}).slider('pips',  { 
@@ -363,24 +394,47 @@ define([
 				if (region === 'Maine') {
 					// TODO When initially activated, the region layer isn't loaded, so stats are unavailable
 					this.map.setExtent(this.defaultExtent);
-					self.$el.find('.current-salt-marsh .number .value').html(self.addCommas(parseInt(_.reduce(this.layers.regions.graphics, function(mem, graphic) {
-						return mem + graphic.attributes.Current_Tidal_Marsh_Acres;
-					}, 0))));
-					self.$el.find('.inland-wetlands .number .value').html(self.addCommas(parseInt(_.reduce(this.layers.regions.graphics, function(mem, graphic) {
-						return mem + graphic.attributes.Non_Tidal_Wetland_Acres;
-					}, 0))));
-					self.$el.find('.roadcrossing-potential .number .value').html(self.addCommas(parseInt(_.reduce(this.layers.regions.graphics, function(mem, graphic) {
-						return mem + graphic.attributes.Barrier_Count;
-					}, 0))));
+
+					self.setMarshScenarioStats({
+						current: _.reduce(this.layers.regions.graphics, function(mem, graphic) {
+							return mem + graphic.attributes.Current_Tidal_Marsh_Acres;
+						}, 0),
+						ft1: _.reduce(this.layers.regions.graphics, function(mem, graphic) {
+							return mem + graphic.attributes.CurrentPlus1Ft_Acres;
+						}, 0),
+						ft2: _.reduce(this.layers.regions.graphics, function(mem, graphic) {
+							return mem + graphic.attributes.CurrentPlus2Ft_Acres;
+						}, 0),
+						ft33: _.reduce(this.layers.regions.graphics, function(mem, graphic) {
+							return mem + graphic.attributes.CurrentPlus3Ft_Acres;
+						}, 0),
+						ft6: _.reduce(this.layers.regions.graphics, function(mem, graphic) {
+							return mem + graphic.attributes.CurrentPlus6Ft_Acres;
+						}, 0),
+						barriers: _.reduce(this.layers.regions.graphics, function(mem, graphic) {
+							return mem + graphic.attributes.Barrier_Count;
+						}, 0),
+						wetlands: _.reduce(this.layers.regions.graphics, function(mem, graphic) {
+							return mem + graphic.attributes.Non_Tidal_Wetland_Acres;
+						}, 0),
+					});
+
 				} else {
 					_.each(this.layers.regions.graphics, function(graphic) {
 						if (graphic.attributes.NAME === region) {
 
 							// TODO Select based off of current salt marsh scenario
 							// TODO Add commas as thousands selector
-							self.$el.find('.current-salt-marsh .number .value').html(self.addCommas(parseInt(graphic.attributes.Current_Tidal_Marsh_Acres)));
-							self.$el.find('.inland-wetlands .number .value').html(self.addCommas(parseInt(graphic.attributes.Non_Tidal_Wetland_Acres)));
-							self.$el.find('.roadcrossing-potential .number .value').html(self.addCommas(parseInt(graphic.attributes.Barrier_Count)));
+						
+							self.setMarshScenarioStats({
+								current: graphic.attributes.Current_Tidal_Marsh_Acres,
+								ft1: graphic.attributes.CurrentPlus1Ft_Acres,
+								ft2: graphic.attributes.CurrentPlus2Ft_Acres,
+								ft33: graphic.attributes.CurrentPlus3Ft_Acres,
+								ft6: graphic.attributes.CurrentPlus6Ft_Acres,
+								barriers: graphic.attributes.Barrier_Count,
+								wetlands: graphic.attributes.Non_Tidal_Wetland_Acres
+							});
 
 							self.map.setExtent(graphic.geometry.getExtent());
 							return false;
@@ -408,10 +462,59 @@ define([
 					4: 5
 				};
 
+				this.$el.find('.salt-marsh-control').attr('data-scenario-idx', idx);
+
 				//this.marshScenarioIdx = idx;
 				this.layers.marshHabitat.setVisibleLayers([scenarioMap[idx]]);
 				this.layers.marshHabitatParcels.setVisibleLayers([scenarioMapParcels[idx]]);
 				this.layers.marshHabitat.refresh();
+				this.updateStatistics();
+			},
+
+			setMarshScenarioStats: function(values) {
+				var control = this.$el.find('.salt-marsh-control');
+
+				control.attr('data-scenario-current', values.current);
+				control.attr('data-scenario-ft1', values.ft1);
+				control.attr('data-scenario-ft2', values.ft2);
+				control.attr('data-scenario-ft33', values.ft33);
+				control.attr('data-scenario-ft6', values.ft6);
+				control.attr('data-scenario-barriers', values.barriers);
+				control.attr('data-scenario-wetlands', values.wetlands);
+
+				this.updateStatistics();
+
+				
+			},
+
+			updateStatistics: function() {
+				var control = this.$el.find('.salt-marsh-control');
+				var idx = control.attr('data-scenario-idx');
+				var saltMarshValue;
+
+				switch(parseInt(idx)) {
+					case 0:
+						saltMarshValue = control.attr('data-scenario-current');
+						break;
+					case 1:
+						saltMarshValue = control.attr('data-scenario-ft1');
+						break;
+					case 2:
+						saltMarshValue = control.attr('data-scenario-ft2');
+						break;
+					case 3:
+						saltMarshValue = control.attr('data-scenario-ft33');
+						break;
+					case 4:
+						saltMarshValue = control.attr('data-scenario-ft6');
+						break;
+				}
+
+				//console.log(saltMarshValue)
+
+				this.$el.find('.current-salt-marsh .number .value').html(this.addCommas(parseInt(saltMarshValue)));
+				this.$el.find('.inland-wetlands .number .value').html(this.addCommas(parseInt(control.data('scenario-wetlands'))));
+				this.$el.find('.roadcrossing-potential .number .value').html(this.addCommas(control.data('scenario-barriers')));
 			},
 
 			getParcelByPoint: function(pt) {
@@ -426,9 +529,15 @@ define([
 						self.$el.find('#parcel-id').html(parcel.attributes.Parcel_Name);
 						self.$el.find('.region-label').html(parcel.attributes.Parcel_Name);
 
-						self.$el.find('.current-salt-marsh .number .value').html(parseInt(parcel.attributes.Current_Tidal_Marsh_Acres));
-						self.$el.find('.inland-wetlands .number .value').html(parseInt(parcel.attributes.Non_Tidal_Wetland_Acres));
-						self.$el.find('.roadcrossing-potential .number .value').html(parseInt(parcel.attributes.Barrier_Count_100m));
+						self.setMarshScenarioStats({
+								current: parcel.attributes.Current_Tidal_Marsh_Acres,
+								ft1: parcel.attributes.CurrentPlus1Ft_Acres,
+								ft2: parcel.attributes.CurrentPlus2Ft_Acres,
+								ft33: parcel.attributes.CurrentPlus3Ft_Acres,
+								ft6: parcel.attributes.CurrentPlus6Ft_Acres,
+								barriers: parcel.attributes.Barrier_Count,
+								wetlands: parcel.attributes.Non_Tidal_Wetland_Acres
+							});
 
 						self.parcelGraphics.clear();
 						var highlightGraphic = new Graphic(parcel.geometry, self.regionSymbolHover);
