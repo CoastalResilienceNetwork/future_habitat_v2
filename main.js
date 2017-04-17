@@ -454,19 +454,23 @@ define([
 					4: 12
 				};
 
-				var scenarioMapParcels = {
+				/*var scenarioMapParcels = {
 					0: 6,
 					1: 2,
 					2: 3,
 					3: 4,
 					4: 5
-				};
+				};*/
 
 				this.$el.find('.salt-marsh-control').attr('data-scenario-idx', idx);
 
-				//this.marshScenarioIdx = idx;
-				this.layers.marshHabitat.setVisibleLayers([scenarioMap[idx]]);
-				this.layers.marshHabitatParcels.setVisibleLayers([scenarioMapParcels[idx]]);
+				if (idx === 0) {
+					this.layers.marshHabitat.setVisibleLayers([scenarioMap[idx]]);
+					//this.layers.marshHabitatParcels.setVisibleLayers([scenarioMapParcels[idx]]);
+				} else {
+					this.layers.marshHabitat.setVisibleLayers([13, scenarioMap[idx]]);
+					//this.layers.marshHabitatParcels.setVisibleLayers([6, scenarioMapParcels[idx]]);
+				}
 				this.layers.marshHabitat.refresh();
 				this.updateStatistics();
 			},
@@ -491,6 +495,7 @@ define([
 				var control = this.$el.find('.salt-marsh-control');
 				var idx = control.attr('data-scenario-idx');
 				var saltMarshValue;
+				var wetlandValue = control.data('scenario-wetlands');
 
 				switch(parseInt(idx)) {
 					case 0:
@@ -511,9 +516,20 @@ define([
 				}
 
 				//console.log(saltMarshValue)
+				if (parseFloat(saltMarshValue) > 100) {
+					saltMarshValue = parseInt(saltMarshValue);
+				} else {
+					saltMarshValue = parseFloat(saltMarshValue).toFixed(1);
+				}
 
-				this.$el.find('.current-salt-marsh .number .value').html(this.addCommas(parseInt(saltMarshValue)));
-				this.$el.find('.inland-wetlands .number .value').html(this.addCommas(parseInt(control.data('scenario-wetlands'))));
+				if (parseFloat(wetlandValue) > 100) {
+					wetlandValue = parseInt(wetlandValue);
+				} else {
+					wetlandValue = parseFloat(wetlandValue).toFixed(1);
+				}
+
+				this.$el.find('.current-salt-marsh .number .value').html(this.addCommas(saltMarshValue));
+				this.$el.find('.inland-wetlands .number .value').html(this.addCommas(wetlandValue));
 				this.$el.find('.roadcrossing-potential .number .value').html(this.addCommas(control.data('scenario-barriers')));
 			},
 
