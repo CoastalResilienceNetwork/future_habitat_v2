@@ -1,5 +1,10 @@
 <style>
 
+	/* TODO: integrate to master styleguide.css */
+	.chosen-container-single .chosen-single span {
+		width: calc(100% - 19px);
+	}
+
 	.future-habitat {
 		display: flex;
 		flex-direction: row;
@@ -67,13 +72,15 @@
 	}
 
 	.transparency-control {
-		position: relative;
+		position: absolute;
 		display: inline-block;
 		margin: 12px 14px 40px;
     	vertical-align: top;
+    	right: 15px;
 	}
 
 	.transparency-header {
+		display: none;
 		position: absolute;
 		font-size: 11px;
 		top: -14px;
@@ -82,22 +89,28 @@
 
 	.transparency-label {
 		position: relative;
-		width: 50px;
-		border: 1px solid #aaa;
+		/*width: 50px;*/
+		/*border: 1px solid #aaa;*/
 	    font-size: 11px;
-	    padding: 0px 3px;
-	    border-right: 15px solid #aaa;
+	    /*padding: 0px 3px;*/
+	    width: 0;
+	    padding: 0;
+	    /*border-right: 15px solid #aaa;*/
 	    cursor: pointer;
 	    user-select: none;
 	}
 
 	.transparency-label::after {
-		content: "\f0d7";
+		content: "\f042";
 		position: absolute;
 		top: 0;
 		right: -11px;
 		font-family: "FontAwesome";
+		font-size: 14px;
+	}
 
+	.transparency-label .value {
+		display: none;
 	}
 
 	.transparency-slider {
@@ -105,7 +118,7 @@
 		display: none;
 	    width: 85px;
 	    height: 19px;
-	    right: 0;
+	    right: 3px;
 	    background-color: #aaa;
 	    padding: 0 10px;
 	    border-radius: 3px;
@@ -141,75 +154,86 @@
 
 	.stats .stat {
 		position: relative;
-		background-color: #fff;
 		margin: 5px 0;
-		height: 75px;
-		cursor: pointer;
+		height: 60px;
+		/*cursor: pointer;*/
 		white-space: nowrap;
-		width: calc(50% - 8px);
+		width: 100%;
    		margin-right: 8px;
 	}
 
-	.stats .stat:first-child {
-		width: 100%;
-		height: 60px;
+	.stats .stat .pill {
+		background-color: #36a7d8;
+	    color: #fff;
+	    border-radius: 30px;
+	    height: 60px;
+	    width: 352px;
 	}
 
 	.stats .stat-info {
-		width: 20px;
+	    width: 20px;
 	    position: absolute;
 	    top: 0;
 	    bottom: 0;
-		background-color: #dddddd;
+	    right: -5px;
 	}
 
 	.stats .stat-info .fa-info-circle {
-		color: #fff;
+		color: #266f9c;
 	    position: absolute;
 	    top: 23px;
 	    left: 4px;
+	    font-size: 16px;
 	}
 
-	.stats .stat.active .stat-info {
+	/*.stats .stat.active .stat-info {
 		background-color: #03a0da;
-	}
+	}*/
 
 	.stats .number {
-    	display: inline-block;
-	    padding-left: 30px;
-	    font-size: 20px;
-	    width: 100%;
-	    padding-top: 5px;
+	    position: absolute;
+	    left: 13px;
+    	line-height: 60px;
+    	font-size: 20px;
 	}
 
-	.stats .stat:first-child .number {
-		height: 100%;
-		line-height: 60px;
-		font-size: 24px;
-		width: 38%;
-		padding-left: 38px;
-		padding-top: 0px;
+	.stats .number .icon {
+		display: inline-block;
+		width: 35px;
+		height: 35px;
+		border-radius: 17px;
+		vertical-align: middle;
+		
 	}
 
-	.stats .stat.active .number {
+	.stats .number .icon.grass {
+	    background: url(plugins/future-habitat-v2/icons/grass.png) center no-repeat white;
+	    background-size: 30px 30px;
+	}
+
+	.stats .number .icon.bird {
+	    background: url(plugins/future-habitat-v2/icons/bird.png) center no-repeat white;
+	    background-size: 30px 30px;
+	}
+
+	.stats .number .icon.fish {
+	    background: url(plugins/future-habitat-v2/icons/fish.png) center no-repeat white;
+	    background-size: 30px 30px;
+	}
+
+
+	/*.stats .stat.active .number {
 		color: #03a0da;
-	}
+	}*/
 
 	.stats .description {
-		display: block;
-	    vertical-align: top;
-	    padding-left: 30px;
-	}
-
-	.stats .stat:first-child .description {
-		display: inline-block;
-		line-height: 60px;
-		font-size: 20px;
-		width: 62%;
-	}
-
-	.stats .stat.active .description {
-		color: #03a0da;
+	    line-height: 24px;
+	    font-size: 19px;
+	    position: absolute;
+	    left: 200px;
+	    width: 161px;
+	    display: block;
+	    padding-top: 6px;
 	}
 
 	.additional-layers .description {
@@ -294,33 +318,42 @@
 	<div class="stats">
 
 		<div class="stat active current-salt-marsh">
+			<div class="pill">
+				<div class="number">
+					<div class="icon grass"></div>
+					<span class="value">22,371</span> acres
+				</div>
+				<div class="description" style="padding-top: 18px;">Tidal Marsh Area</div>
+			</div>
 			<div class="stat-info">
 				<span class="fa fa-info-circle info" title="Displays the current and predicted size of tidal marshes visible on the map or selected in response to projected sea-level rise scenarios."></span>
 			</div>
-			<div class="number">
-				<span class="value">22371</span> acres
-			</div>
-			<div class="description">Tidal Marsh Area</div>
 		</div>
 
 		<div class="stat inland-wetlands">
+			<div class="pill">
+				<div class="number">
+					<div class="icon fish"></div>
+					<span class="value">406,231</span> acres
+				</div>
+				<div class="description">Non-Tidal<br>Wetlands Area</div>
+			</div>
 			<div class="stat-info">
 				<span class="fa fa-info-circle info" title="Displays current fresh water wetland areas. Indicates CURRENT CONDITIONS ONLY AND DOES NOT PREDICT potential FUTURE CONDITIONS WITH SEA LEVEL CHANGE. (Check the Non-Tidal Wetlands box below to view this information.)"></span>
 			</div>
-			<div class="number">
-				<span class="value">406231</span> acres
-			</div>
-			<div class="description">Non-Tidal Wetlands Area</div>
 		</div>
 
 		<div class="stat roadcrossing-potential">
+			<div class="pill">
+				<div class="number">
+					<div class="icon bird"></div>
+					<span class="value">2,198</span>
+				</div>
+				<div class="description">Road Crossing<br>Barriers Nearby</div>
+			</div>
 			<div class="stat-info">
 				<span class="fa fa-info-circle info" title="Displays surveyed road crossings that have been identified as potential stream barriers within 300 feet of selected parcels. (Check the Road-Stream Crossing Barriers box below to view this information.)"></span>
 			</div>
-			<div class="number">
-				<span class="value">2198</span>
-			</div>
-			<div class="description">Road Crossing<br>Barriers Nearby</div>
 		</div>
 
 	</div>

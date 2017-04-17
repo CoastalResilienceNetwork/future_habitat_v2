@@ -277,6 +277,8 @@ define([
 				this.map.on('click', function(e) {
 					self.getParcelByPoint(e.mapPoint);
 				});
+
+				//this.zoomToRegion('Maine');
 			},
 
 			deactivate: function() {
@@ -323,7 +325,6 @@ define([
 				}).slider('pips',  { 
 					rest: 'label',
 					labels: saltMarshLabels,
-
 				});
 
                 this.$el.find(".transparency-slider .slider").slider({
@@ -338,6 +339,8 @@ define([
 						control.find('.value').html(ui.value + '%');
 						self.layers[layer].setOpacity(ui.value / 100);
             		}
+				}).slider('float', {
+					//labels: saltMarshLabels
 				});
 
 				this.$el.find('.info').tooltip({container:'body'});
@@ -351,25 +354,26 @@ define([
 				this.$el.find('.region-label').html(region);
 
 				if (region === 'Maine') {
+					// TODO When initially activated, the region layer isn't loaded, so stats are unavailable
 					this.map.setExtent(this.defaultExtent);
-					self.$el.find('.current-salt-marsh .number .value').html(parseInt(_.reduce(this.layers.regions.graphics, function(mem, graphic) {
+					self.$el.find('.current-salt-marsh .number .value').html(self.addCommas(parseInt(_.reduce(this.layers.regions.graphics, function(mem, graphic) {
 						return mem + graphic.attributes.Current_Tidal_Marsh_Acres;
-					}, 0)));
-					self.$el.find('.inland-wetlands .number .value').html(parseInt(_.reduce(this.layers.regions.graphics, function(mem, graphic) {
+					}, 0))));
+					self.$el.find('.inland-wetlands .number .value').html(self.addCommas(parseInt(_.reduce(this.layers.regions.graphics, function(mem, graphic) {
 						return mem + graphic.attributes.Non_Tidal_Wetland_Acres;
-					}, 0)));
-					self.$el.find('.roadcrossing-potential .number .value').html(parseInt(_.reduce(this.layers.regions.graphics, function(mem, graphic) {
+					}, 0))));
+					self.$el.find('.roadcrossing-potential .number .value').html(self.addCommas(parseInt(_.reduce(this.layers.regions.graphics, function(mem, graphic) {
 						return mem + graphic.attributes.Barrier_Count;
-					}, 0)));
+					}, 0))));
 				} else {
 					_.each(this.layers.regions.graphics, function(graphic) {
 						if (graphic.attributes.NAME === region) {
 
 							// TODO Select based off of current salt marsh scenario
 							// TODO Add commas as thousands selector
-							self.$el.find('.current-salt-marsh .number .value').html(parseInt(graphic.attributes.Current_Tidal_Marsh_Acres));
-							self.$el.find('.inland-wetlands .number .value').html(parseInt(graphic.attributes.Non_Tidal_Wetland_Acres));
-							self.$el.find('.roadcrossing-potential .number .value').html(parseInt(graphic.attributes.Barrier_Count));
+							self.$el.find('.current-salt-marsh .number .value').html(self.addCommas(parseInt(graphic.attributes.Current_Tidal_Marsh_Acres)));
+							self.$el.find('.inland-wetlands .number .value').html(self.addCommas(parseInt(graphic.attributes.Non_Tidal_Wetland_Acres)));
+							self.$el.find('.roadcrossing-potential .number .value').html(self.addCommas(parseInt(graphic.attributes.Barrier_Count)));
 
 							self.map.setExtent(graphic.geometry.getExtent());
 							return false;
@@ -456,12 +460,25 @@ define([
 
 					var non_tidal_wetlands_Definitions = [];
 					non_tidal_wetlands_Definitions[7] = "Parcel_ID_Unique = " + parcelId;
-					this.layers.non_tidal_wetlands_parcels.setLayerDefinitions(non_tidal_wetlands_Definitions);
-					this.layers.non_tidal_wetlands_parcels.setVisibility(true);
+					//this.layers.non_tidal_wetlands_parcels.setLayerDefinitions(non_tidal_wetlands_Definitions);
+					//this.layers.non_tidal_wetlands_parcels.setVisibility(true);
 				} else {
-					this.layers.non_tidal_wetlands_parcels.setVisibility(false);
-					this.layers.marshHabitatParcels.setVisibility(false);
+					//this.layers.non_tidal_wetlands_parcels.setVisibility(false);
+					//this.layers.marshHabitatParcels.setVisibility(false);
 				}
+			},
+
+			// http://stackoverflow.com/questions/2646385/add-a-thousands-separator-to-a-total-with-javascript-or-jquery
+			addCommas: function(nStr) {
+			    nStr += '';
+			    var x = nStr.split('.');
+			    var x1 = x[0];
+			    var x2 = x.length > 1 ? '.' + x[1] : '';
+			    var rgx = /(\d+)(\d{3})/;
+			    while (rgx.test(x1)) {
+			        x1 = x1.replace(rgx, '$1' + ',' + '$2');
+			    }
+			    return x1 + x2;
 			}
 
 
