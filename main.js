@@ -343,7 +343,7 @@ define([
 					//labels: saltMarshLabels
 				});
 
-				this.$el.find('.info').tooltip({container:'body'});
+				this.$el.find('.info').tooltip();
 
 				this.bindEvents();
 			},
