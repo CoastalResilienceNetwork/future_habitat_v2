@@ -442,6 +442,8 @@ define([
 					});
 
 				}
+
+				this.parcelGraphics.clear();
 			},
 
 			setMarshScenario: function(idx) {
@@ -515,7 +517,6 @@ define([
 						break;
 				}
 
-				//console.log(saltMarshValue)
 				if (parseFloat(saltMarshValue) > 100) {
 					saltMarshValue = parseInt(saltMarshValue);
 				} else {
