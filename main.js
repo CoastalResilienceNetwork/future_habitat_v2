@@ -50,6 +50,9 @@ define([
 			width: 425,
 			size: 'custom',
 			allowIdentifyWhenActive: false,
+			hasCustomPrint: true,
+			usePrintPreviewMap: true,
+			previewMapSize: [500, 400],
 			layers: {},
 			defaultExtent: new Extent(-7959275, 5087981, -7338606, 5791202, new SpatialReference({wkid: 102100})),
 			selectedParcel: null,
@@ -164,8 +167,8 @@ define([
 				if (!this.layers.marshHabitat) {
 					this.layers.marshHabitat = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
 						id: 'marshHabitat'
-					});
-					this.layers.marshHabitat.setVisibleLayers([13]);
+					});13
+					this.layers.marshHabitat.setVisibleLayers([2]);
 					this.map.addLayer(this.layers.marshHabitat);
 				}
 
@@ -180,25 +183,25 @@ define([
 					marshHabitatParcelsDefinitions[5] = 'Parcel_ID_Unique = 0';
 					marshHabitatParcelsImageParameters.layerDefinitions = marshHabitatParcelsDefinitions;
 
-					this.layers.marshHabitatParcels = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
+					/*this.layers.marshHabitatParcels = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
 						visible: false,
 						id: 'marshHabitatParcels',
 						imageParameters: marshHabitatParcelsImageParameters
 					});
 					this.layers.marshHabitatParcels.setVisibleLayers([6]);
 
-					this.map.addLayer(this.layers.marshHabitatParcels);
+					this.map.addLayer(this.layers.marshHabitatParcels);*/
 				}
  
 				if (!this.layers.non_tidal_wetlands) {
 					this.layers.non_tidal_wetlands = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
 						visible: false
 					});
-					this.layers.non_tidal_wetlands.setVisibleLayers([8]);
+					this.layers.non_tidal_wetlands.setVisibleLayers([7]);
 					this.map.addLayer(this.layers.non_tidal_wetlands);
 				}
 
-				if (!this.layers.non_tidal_wetlands_parcels) {
+				/*if (!this.layers.non_tidal_wetlands_parcels) {
 					var non_tidal_wetlands_ImageParameters = new ImageParameters();
 					var non_tidal_wetlands_Definitions = [];
 
@@ -211,7 +214,7 @@ define([
 					});
 					this.layers.non_tidal_wetlands_parcels.setVisibleLayers([7]);
 					this.map.addLayer(this.layers.non_tidal_wetlands_parcels);
-				}
+				}*/
 
 				if (!this.layers.current_conservation_lands) {
 					this.layers.current_conservation_lands = new ArcGISDynamicMapServiceLayer("http://cumulus-web-adapter-1827610810.us-west-1.elb.amazonaws.com/arcgis/rest/services/EasternDivision/SECUREDAREAS2014_S_A_Map_Service_2014_Public/MapServer", {
@@ -224,7 +227,7 @@ define([
 					this.layers.wildlife_habitat = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
 						visible: false
 					});
-					this.layers.wildlife_habitat.setVisibleLayers([16]);
+					this.layers.wildlife_habitat.setVisibleLayers([10]);
 					this.map.addLayer(this.layers.wildlife_habitat);
 				}
 
@@ -238,7 +241,7 @@ define([
 
 				if (!this.layers.parcels) {
 					this.layers.parcels = new VectorTileLayer("http://tiles.arcgis.com/tiles/F7DSX1DSNSiWmOqh/arcgis/rest/services/Maine_Coastal_Parcels/VectorTileServer", {
-						minScale: 72223.82209
+						minScale: 36111.911040
 					});
 					this.map.addLayer(this.layers.parcels);
 
@@ -249,7 +252,7 @@ define([
 
 				if (!this.layers.regions) {
 					// We use snapshot mode because we need all the features locally for querying attributes
-					this.layers.regions = new FeatureLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/14", {
+					this.layers.regions = new FeatureLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/8", {
 						mode: FeatureLayer.MODE_SNAPSHOT,
 						outFields: ['*']
 					});
@@ -332,6 +335,18 @@ define([
 			hibernate: function() {
 
 			},
+
+			/*beforePrint: function(printDeferred, $printSandbox, previewMap) {
+                // We can short circuit the plugin print chain by simply
+                // rejecting this deferred object.
+                printDeferred.reject();
+                //$printSandbox.find('[name=export-include-legend]').parents('.form-component').hide();
+
+                // Trigger an export dialog for this pane.
+                this.app.dispatcher.trigger('export-map:pane-' + this.app.paneNumber);
+console.log($printSandbox)
+
+            },*/
 
 			render: function() {
 				var self = this;
@@ -449,11 +464,11 @@ define([
 			setMarshScenario: function(idx) {
 				// Map the slider index to the layer index in the map service
 				var scenarioMap = {
-					0: 13,
-					1: 9,
-					2: 10,
-					3: 11,
-					4: 12
+					0: 2,
+					1: 3,
+					2: 4,
+					3: 5,
+					4: 6
 				};
 
 				/*var scenarioMapParcels = {
@@ -466,13 +481,24 @@ define([
 
 				this.$el.find('.salt-marsh-control').attr('data-scenario-idx', idx);
 
-				if (idx === 0) {
-					this.layers.marshHabitat.setVisibleLayers([scenarioMap[idx]]);
-					//this.layers.marshHabitatParcels.setVisibleLayers([scenarioMapParcels[idx]]);
-				} else {
-					this.layers.marshHabitat.setVisibleLayers([13, scenarioMap[idx]]);
-					//this.layers.marshHabitatParcels.setVisibleLayers([6, scenarioMapParcels[idx]]);
+				switch(parseInt(idx)) {
+					case 0:
+						this.layers.marshHabitat.setVisibleLayers([2]);
+						break;
+					case 1:
+						this.layers.marshHabitat.setVisibleLayers([2, 3]);
+						break;
+					case 2:
+						this.layers.marshHabitat.setVisibleLayers([2, 3, 4]);
+						break;
+					case 3:
+						this.layers.marshHabitat.setVisibleLayers([2, 3, 4, 5]);
+						break;
+					case 4:
+						this.layers.marshHabitat.setVisibleLayers([2, 3, 4, 5, 6]);
+						break;
 				}
+
 				this.layers.marshHabitat.refresh();
 				this.updateStatistics();
 			},
@@ -581,6 +607,7 @@ define([
 			},
 
 			setSelectedMarshByParcel: function(parcelId) {
+				return;
 				if (parcelId) {
 					var marshHabitatParcelsDefinitions = [];
 					marshHabitatParcelsDefinitions[6] = "Parcel_ID_Unique = " + parcelId;
