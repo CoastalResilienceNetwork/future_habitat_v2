@@ -52,7 +52,7 @@ define([
 			allowIdentifyWhenActive: false,
 			hasCustomPrint: true,
 			usePrintPreviewMap: true,
-			previewMapSize: [500, 400],
+			previewMapSize: [500, 300],
 			layers: {},
 			defaultExtent: new Extent(-7959275, 5087981, -7338606, 5791202, new SpatialReference({wkid: 102100})),
 			selectedParcel: null,
@@ -335,17 +335,31 @@ define([
 
 			},
 
-			/*beforePrint: function(printDeferred, $printSandbox, previewMap) {
+			beforePrint: function(printDeferred, $printArea, mapObject) {
                 // We can short circuit the plugin print chain by simply
                 // rejecting this deferred object.
-                printDeferred.reject();
-                //$printSandbox.find('[name=export-include-legend]').parents('.form-component').hide();
+                //printDeferred.reject();
 
-                // Trigger an export dialog for this pane.
-                this.app.dispatcher.trigger('export-map:pane-' + this.app.paneNumber);
-console.log($printSandbox)
+                var customFormHtml = '<div id="future-habitat-custom-print-form">' + 
+	                	'<label class="lbl-text">Title (Optional)</label><input type="text" id="print-title" />' +
+	                	'<label class="lbl-text">Subtitle (Optional)</label><input type="text" id="print-subtitle" />' + 
+	                	'<label class="form-component">' +
+							'<input type="checkbox" checked>' +
+							'<div class="check"></div>' +
+							'<span class="form-text">Include Conservation Measures</span>' +
+						'</label>' +
+	                '</div>';
 
-            },*/
+				
+				var injectionPoint = $('#plugin-print-preview .print-preview-container');
+
+				injectionPoint.before(customFormHtml);
+
+
+				printDeferred.resolve();
+
+
+            },
 
 			render: function() {
 				var self = this;

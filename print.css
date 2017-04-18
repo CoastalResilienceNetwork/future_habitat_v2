@@ -1,0 +1,51 @@
+/*#print-sandbox-header {
+	width: 8in;
+}
+
+#print-map-container {
+	width: 8in;
+}
+
+#legend-container-0 {
+	position: absolute;
+	right: 0;
+	width: 2in;
+}
+
+.print-sandbox-header {
+	width 80% !important;
+}
+
+#print-map-container > #export-print-preview-map > #map-0 {
+	width: 80% !important;
+}
+
+#legend-container-0 {
+	position: absolute !important;
+    margin-left: 80% !important;
+    top: 0px !important;
+    width: 20% !important;
+}
+
+.dojoxResizeHandle {
+	display: none;
+}*/
+
+
+@media print {
+	@page { 
+        size: landscape;
+		margin: 13mm 13mm 13mm 13mm;
+    }
+
+    #plugin-print-preview-map {
+        visibility: visible;
+		position:absolute;
+		width:600px;
+		height:400px;
+		margin-left:50px;
+		top:50px;
+		left:-20px;
+    }
+
+}
