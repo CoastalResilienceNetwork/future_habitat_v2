@@ -167,7 +167,7 @@ define([
 				if (!this.layers.marshHabitat) {
 					this.layers.marshHabitat = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
 						id: 'marshHabitat'
-					});13
+					});
 					this.layers.marshHabitat.setVisibleLayers([2]);
 					this.map.addLayer(this.layers.marshHabitat);
 				}
@@ -291,7 +291,6 @@ define([
 
 					// TODO: Clean this up when deactivated
 					this.map.on('zoom-end', function(z) {
-						console.log(z.level);
 						if (z.level >= 11) {
 							self.regionGraphics.clear();
 						}
@@ -607,7 +606,7 @@ console.log($printSandbox)
 			},
 
 			setSelectedMarshByParcel: function(parcelId) {
-				return;
+
 				if (parcelId) {
 					var marshHabitatParcelsDefinitions = [];
 					marshHabitatParcelsDefinitions[6] = "Parcel_ID_Unique = " + parcelId;
