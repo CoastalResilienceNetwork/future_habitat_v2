@@ -240,7 +240,7 @@ define([
 				}
 
 				if (!this.layers.parcels) {
-					this.layers.parcels = new VectorTileLayer("http://tiles.arcgis.com/tiles/F7DSX1DSNSiWmOqh/arcgis/rest/services/Maine_Coastal_Parcels/VectorTileServer", {
+					this.layers.parcels = new VectorTileLayer("http://tiles.arcgis.com/tiles/F7DSX1DSNSiWmOqh/arcgis/rest/services/Maine_Parcels_Coastal/VectorTileServer", {
 						minScale: 36111.911040
 					});
 					this.map.addLayer(this.layers.parcels);
