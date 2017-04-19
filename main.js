@@ -340,20 +340,92 @@ define([
                 // rejecting this deferred object.
                 //printDeferred.reject();
 
+                if (this.layers.lidar.visible) {
+					var lidarlyr = new WMSLayer("http://mapserver.maine.gov/wms/mapserv.exe?map=c:/wms/topos.map", {
+						visibleLayers: ['medem2_hill','medem2_overview10_hill','medem2_overview30_hill','medem2_overview100_hill']
+					});
+					mapObject.addLayer(lidarlyr);
+				}
+
+               	var visibleLayers = [].concat(this.layers.marshHabitat.visibleLayers)
+               							.concat(this.layers.non_tidal_wetlands.visible ? this.layers.non_tidal_wetlands.visibleLayers : [])
+               							.concat(this.layers.wildlife_habitat.visible ? this.layers.wildlife_habitat.visibleLayers : [])
+               							.concat(this.layers.road_stream_crossing.visible ? this.layers.road_stream_crossing.visibleLayers : []);
+
+
+                var genLyr = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer");
+					genLyr.setVisibleLayers(visibleLayers);
+					mapObject.addLayer(genLyr);
+
+				if (this.layers.current_conservation_lands.visible) {
+					var conLand = new ArcGISDynamicMapServiceLayer("http://cumulus-web-adapter-1827610810.us-west-1.elb.amazonaws.com/arcgis/rest/services/EasternDivision/SECUREDAREAS2014_S_A_Map_Service_2014_Public/MapServer");
+					mapObject.addLayer(conLand);
+				}
+
+				var regionlyr = new FeatureLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/8", {
+					mode: FeatureLayer.MODE_SNAPSHOT,
+					outFields: ['*']
+				});
+
+                mapObject.addLayer(regionlyr);
+
+
+/* TODO: Parcel Lyr is not working in this map
+/*
+				var parcelLyr = new VectorTileLayer("http://tiles.arcgis.com/tiles/F7DSX1DSNSiWmOqh/arcgis/rest/services/Maine_Parcels_Coastal/VectorTileServer", {
+					minScale: 36111.911040
+				});
+				mapObject.addLayer(parcelLyr);
+*/
+
+
+                $printArea.append('<div class="header"><div id="print-title-map"></div><div id="print-subtitle-map"></div></div>');
+                $printArea.append('<div id="print-cons-measures"><div class="title">Conservation Measures</div></div>');
+                $printArea.append('<div id="custom-print-legend"><div class="title">Legend</div></div>');
+                $printArea.append('<div id="custom-print-footer">' +
+                	'<div class="big-title">Coastal Resilience - Maine Future Habitat Mapping Tool</div>' +
+                	'<div class="custom-print-footer-content">Tidal Marsh Data: Maine Natural Areas Program (MNAP)<br>' +
+                	'SLR Projections: Maine Geological Survey, MNAP<br>' +
+                	'Application Development: The Nature Conservancy' +
+                	'<img class="print-logo" src="img/logo-nature-notagline.png" />' +
+                	'</div>');
+
                 var customFormHtml = '<div id="future-habitat-custom-print-form">' + 
 	                	'<label class="lbl-text">Title (Optional)</label><input type="text" id="print-title" />' +
 	                	'<label class="lbl-text">Subtitle (Optional)</label><input type="text" id="print-subtitle" />' + 
 	                	'<label class="form-component">' +
-							'<input type="checkbox" checked>' +
+							'<input id="print-cons" type="checkbox" checked>' +
 							'<div class="check"></div>' +
 							'<span class="form-text">Include Conservation Measures</span>' +
 						'</label>' +
 	                '</div>';
 
-				
+	            $("#legend-container-0").clone().appendTo('#custom-print-legend');
+
 				var injectionPoint = $('#plugin-print-preview .print-preview-container');
 
 				injectionPoint.before(customFormHtml);
+
+				$("#print-title").on('blur', function(e) {
+					$("#print-title-map").html(e.target.value);
+				});
+
+				$("#print-subtitle").on('blur', function(e) {
+					$("#print-subtitle-map").html(e.target.value);
+				});
+
+				$("#print-cons").on('change', function(e) {
+					if (e.target.checked) {
+						$("#print-cons-measures").show();
+						$("#custom-print-legend").css({height: '4in'});
+					} else {
+						$("#print-cons-measures").hide();
+						$("#custom-print-legend").css({height: '7.2in'});
+					}
+					
+				});
+
+
 
 
 				printDeferred.resolve();

@@ -38,14 +38,94 @@
 		margin: 13mm 13mm 13mm 13mm;
     }
 
-    #plugin-print-preview-map {
-        visibility: visible;
-		position:absolute;
-		width:600px;
-		height:400px;
-		margin-left:50px;
-		top:50px;
-		left:-20px;
+    #map-print-sandbox {
+    	display: none !important;
     }
 
+    div.header {
+    	border: 2px solid gray;
+	    width: 8in;
+	    height: 0.8in;
+	    background: white;
+    }
+
+    #print-title-map {
+    	font-size: 22px;
+    	padding: 5px 1px 0px 10px;
+    }
+
+    #print-subtitle-map {
+    	padding: 0px 0px 0px 10px;
+    	font-size: 19px;
+    }
+
+    #custom-print-legend {
+    	border: 2px solid gray;
+	    width: 2in;
+	    position: absolute;
+	    top: 0;
+	    height: 4in;
+	    left: 8in;
+    }
+
+    #print-cons-measures .title,
+    #custom-print-legend .title {
+    	font-size: 16px;
+    	padding-left: 0.05in;
+    }
+
+    #custom-print-legend .legend-header {
+    	display: none;
+    }
+
+    .layer-legends,
+    .legend-layer {
+    	width: 1.9in !important;
+    }
+
+    #print-cons-measures {
+    	border: 2px solid gray;
+	    position: absolute;
+	    left: 8in;
+	    top: 4in;
+	    width: 2in;
+	    height: 3.2in;
+    }
+
+    #custom-print-footer {
+    	position: absolute;
+	    top: 6in;
+	    border: 2px solid gray;
+	    height: 1.2in;
+	    left: 0;
+	    width: 8in;
+	    padding-left: 0.1in;
+    }
+
+    #custom-print-footer .big-title {
+    	font-size: 22px;
+    }
+
+    #custom-print-footer .custom-print-footer-content {
+    	font-size: 15px;
+    }
+
+    #plugin-print-preview-map {
+        visibility: visible;
+	    position: absolute;
+	    width: 8in !important;
+	    height: 5.2in !important;
+	    top: 0.8in;
+    }
+
+    .print-logo {
+    	position: absolute;
+	    right: 0.1in;
+	    bottom: 0.05in;
+    }
+
+}
+
+.dojoxResizeHandle {
+	display: none;
 }
