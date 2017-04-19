@@ -63,6 +63,7 @@ define([
 				this.$el = $(this.container);
 
 				this.render();
+				this.printButton.hide();
 
 				// Setup query handles
 				this.qtParcels = new QueryTask('http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/1');
@@ -137,6 +138,11 @@ define([
 				this.$el.find('#chosenRegion').on('change', function(e) {
 					self.zoomToRegion(e.target.value);
 				});
+
+				this.$el.find('.export .print').on('click', function() {
+					self.printButton.trigger('click');
+				});
+
 			},
 
 			// TODO Set appropriate zoom levels for layers
