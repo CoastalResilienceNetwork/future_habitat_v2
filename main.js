@@ -353,14 +353,19 @@ define([
 
                 mapObject.addLayer(regionlyr);
 
+                
 
-/* TODO: Parcel Lyr is not working in this map
-/*
-				var parcelLyr = new VectorTileLayer("http://tiles.arcgis.com/tiles/F7DSX1DSNSiWmOqh/arcgis/rest/services/Maine_Parcels_Coastal/VectorTileServer", {
+                // TODO Parcel vector Layer is not working in this map, so using dynamic service
+				var parcelLyr = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
 					minScale: 36111.911040
 				});
+				parcelLyr.setVisibleLayers([1]);
 				mapObject.addLayer(parcelLyr);
-*/
+
+				if (this.selectedParcel) {
+                	var highlightGraphic = new Graphic(this.selectedParcel.geometry, this.highlightParcelSymbol);
+                	mapObject.graphics.add(highlightGraphic);
+                }
 
 
                 $printArea.append('<div class="header"><div id="print-title-map"></div><div id="print-subtitle-map"></div></div>');
