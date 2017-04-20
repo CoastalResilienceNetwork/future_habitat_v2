@@ -41,7 +41,6 @@ define([
 		template
 	) {
 
-		// TODO: Dashes, not underscores
 		// TODO: Clear currently selected parcel button
 
 		return declare(PluginBase, {
@@ -74,6 +73,11 @@ define([
 				this.qtCrossings = new QueryTask('http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/0');
 				this.qCrossings = new Query();
 				this.qCrossings.returnGeometry = true;
+
+				this.qtRegions = new QueryTask('http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/8');
+				this.qRegions = new Query();
+				this.qRegions.outFields = ['*'];
+				this.qRegions.returnGeometry = false;
 
 				// Setup graphic styles
 				
@@ -299,6 +303,24 @@ define([
 						self.getParcelByPoint(e.mapPoint);
 					}
 
+					if (zoom < 14 && zoom >= 11) {
+						self.qRegions.geometry = e.mapPoint;
+						self.qtRegions.execute(self.qRegions, function(results) {
+							if (results.features.length) {
+								self.$el.find('.region-label').html(results.features[0].attributes.NAME);
+								self.$el.find('#chosenRegion').val(results.features[0].attributes.NAME).trigger("chosen:updated");
+								self.setMarshScenarioStats({
+									current: results.features[0].attributes.Current_Tidal_Marsh_Acres,
+									ft1: results.features[0].attributes.CurrentPlus1Ft_Acres,
+									ft2: results.features[0].attributes.CurrentPlus2Ft_Acres,
+									ft33: results.features[0].attributes.CurrentPlus3Ft_Acres,
+									ft6: results.features[0].attributes.CurrentPlus6Ft_Acres,
+									barriers: results.features[0].attributes.Barrier_Count,
+									wetlands: results.features[0].attributes.Non_Tidal_Wetland_Acres
+								});
+							}
+						});
+					}
 
 				});
 
@@ -353,8 +375,6 @@ define([
 
                 mapObject.addLayer(regionlyr);
 
-                
-
                 // TODO Parcel vector Layer is not working in this map, so using dynamic service
 				var parcelLyr = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
 					minScale: 36111.911040
@@ -366,7 +386,6 @@ define([
                 	var highlightGraphic = new Graphic(this.selectedParcel.geometry, this.highlightParcelSymbol);
                 	mapObject.graphics.add(highlightGraphic);
                 }
-
 
                 $printArea.append('<div class="header"><div id="print-title-map"></div><div id="print-subtitle-map"></div></div>');
                 $printArea.append('<div id="print-cons-measures"><div class="title">Conservation Measures</div>' +
@@ -606,7 +625,7 @@ define([
 				var control = this.$el.find('.salt-marsh-control');
 				var idx = control.attr('data-scenario-idx');
 				var saltMarshValue;
-				var wetlandValue = control.data('scenario-wetlands');
+				var wetlandValue = control.attr('data-scenario-wetlands');
 
 				switch(parseInt(idx)) {
 					case 0:
@@ -640,7 +659,7 @@ define([
 
 				this.$el.find('.current-salt-marsh .number .value').html(this.addCommas(saltMarshValue));
 				this.$el.find('.inland-wetlands .number .value').html(this.addCommas(wetlandValue));
-				this.$el.find('.roadcrossing-potential .number .value').html(this.addCommas(control.data('scenario-barriers')));
+				this.$el.find('.roadcrossing-potential .number .value').html(this.addCommas(control.attr('data-scenario-barriers')));
 			},
 
 			getParcelByPoint: function(pt) {
