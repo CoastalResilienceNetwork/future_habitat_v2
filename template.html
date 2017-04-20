@@ -5,6 +5,28 @@
 		width: calc(100% - 19px);
 	}
 
+	/* Hack to fix bug in vectortile canvas layer */
+
+	.map[data-zoom="0"] #map-0_mainMapParcelVector,
+	.map[data-zoom="1"] #map-0_mainMapParcelVector,
+	.map[data-zoom="2"] #map-0_mainMapParcelVector,
+	.map[data-zoom="3"] #map-0_mainMapParcelVector,
+	.map[data-zoom="4"] #map-0_mainMapParcelVector,
+	.map[data-zoom="5"] #map-0_mainMapParcelVector,
+	.map[data-zoom="6"] #map-0_mainMapParcelVector,
+	.map[data-zoom="7"] #map-0_mainMapParcelVector,
+	.map[data-zoom="8"] #map-0_mainMapParcelVector,
+	.map[data-zoom="9"] #map-0_mainMapParcelVector,
+	.map[data-zoom="10"] #map-0_mainMapParcelVector,
+	.map[data-zoom="11"] #map-0_mainMapParcelVector,
+	.map[data-zoom="12"] #map-0_mainMapParcelVector,
+	.map[data-zoom="13"] #map-0_mainMapParcelVector,
+	.map[data-zoom="14"] #map-0_mainMapParcelVector {
+		display: none;
+	}
+
+	/* End Hack
+
 	/* Custom print dialog */
 
 	#future-habitat-custom-print-form {
@@ -342,7 +364,7 @@
 
 	<div class="main-controls">
 
-		<h3>Key Metrics for <span class="region-label">Maine</span></h3>
+		<h3>Conservation measures for<br><span class="region-label">Maine</span></h3>
 
 		<div class="salt-marsh-control" data-scenario-idx="0" data-scenario-current="22371.7008" data-scenario-ft1="26799.73447" data-scenario-ft2="31742.08167" data-scenario-ft33="36201.71331" data-scenario-ft6="44494.32286" data-scenario-barriers="2198" data-scenario-wetlands="406231.696">
 			<strong>Salt Marsh Extent</strong>
@@ -378,7 +400,7 @@
 		<div class="stat inland-wetlands">
 			<div class="pill">
 				<div class="number">
-					<div class="icon fish"></div>
+					<div class="icon bird"></div>
 					<span class="value">406,231</span> <span class="units">acres</span>
 				</div>
 				<div class="description">Non-Tidal<br>Wetlands Area</div>
@@ -391,7 +413,7 @@
 		<div class="stat roadcrossing-potential">
 			<div class="pill">
 				<div class="number">
-					<div class="icon bird"></div>
+					<div class="icon fish"></div>
 					<span class="value">2,198</span>
 				</div>
 				<div class="description">Road Crossing<br>Barriers Nearby</div>

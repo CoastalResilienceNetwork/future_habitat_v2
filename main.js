@@ -170,35 +170,21 @@ define([
 					this.map.addLayer(this.layers.lidar);
 				}
 
-				if (!this.layers.marshHabitat) {
-					this.layers.marshHabitat = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
-						id: 'marshHabitat'
+				if (!this.layers.current_conservation_lands) {
+					this.layers.current_conservation_lands = new ArcGISDynamicMapServiceLayer("http://cumulus-web-adapter-1827610810.us-west-1.elb.amazonaws.com/arcgis/rest/services/EasternDivision/SECUREDAREAS2014_S_A_Map_Service_2014_Public/MapServer", {
+						visible: false
 					});
-					this.layers.marshHabitat.setVisibleLayers([2]);
-					this.map.addLayer(this.layers.marshHabitat);
+					this.map.addLayer(this.layers.current_conservation_lands);
+				}
+				
+				if (!this.layers.wildlife_habitat) {
+					this.layers.wildlife_habitat = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
+						visible: false
+					});
+					this.layers.wildlife_habitat.setVisibleLayers([10]);
+					this.map.addLayer(this.layers.wildlife_habitat);
 				}
 
-				if (!this.layers.marshHabitatParcels) {
-					var marshHabitatParcelsImageParameters = new ImageParameters();
-					var marshHabitatParcelsDefinitions = [];
-
-					marshHabitatParcelsDefinitions[6] = 'Parcel_ID_Unique = 0';
-					marshHabitatParcelsDefinitions[2] = 'Parcel_ID_Unique = 0';
-					marshHabitatParcelsDefinitions[3] = 'Parcel_ID_Unique = 0';
-					marshHabitatParcelsDefinitions[4] = 'Parcel_ID_Unique = 0';
-					marshHabitatParcelsDefinitions[5] = 'Parcel_ID_Unique = 0';
-					marshHabitatParcelsImageParameters.layerDefinitions = marshHabitatParcelsDefinitions;
-
-					/*this.layers.marshHabitatParcels = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
-						visible: false,
-						id: 'marshHabitatParcels',
-						imageParameters: marshHabitatParcelsImageParameters
-					});
-					this.layers.marshHabitatParcels.setVisibleLayers([6]);
-
-					this.map.addLayer(this.layers.marshHabitatParcels);*/
-				}
- 
 				if (!this.layers.non_tidal_wetlands) {
 					this.layers.non_tidal_wetlands = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
 						visible: false
@@ -207,34 +193,27 @@ define([
 					this.map.addLayer(this.layers.non_tidal_wetlands);
 				}
 
-				/*if (!this.layers.non_tidal_wetlands_parcels) {
-					var non_tidal_wetlands_ImageParameters = new ImageParameters();
-					var non_tidal_wetlands_Definitions = [];
-
-					non_tidal_wetlands_Definitions[7] = 'Parcel_ID_Unique = 0';
-					non_tidal_wetlands_ImageParameters.layerDefinitions = non_tidal_wetlands_Definitions;
-
-					this.layers.non_tidal_wetlands_parcels = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
-						visible: false,
-						imageParameters: non_tidal_wetlands_ImageParameters
+				if (!this.layers.marshHabitat) {
+					this.layers.marshHabitat = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
+						id: 'marshHabitat'
 					});
-					this.layers.non_tidal_wetlands_parcels.setVisibleLayers([7]);
-					this.map.addLayer(this.layers.non_tidal_wetlands_parcels);
-				}*/
-
-				if (!this.layers.current_conservation_lands) {
-					this.layers.current_conservation_lands = new ArcGISDynamicMapServiceLayer("http://cumulus-web-adapter-1827610810.us-west-1.elb.amazonaws.com/arcgis/rest/services/EasternDivision/SECUREDAREAS2014_S_A_Map_Service_2014_Public/MapServer", {
-						visible: false
-					});
-					this.map.addLayer(this.layers.current_conservation_lands);
+					this.layers.marshHabitat.setVisibleLayers([2]);
+					this.map.addLayer(this.layers.marshHabitat);
 				}
 
-				if (!this.layers.wildlife_habitat) {
-					this.layers.wildlife_habitat = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
-						visible: false
+				// NOTE There is an ESRI bug where some pixels render on the canvas before the minscale
+				// I've "fixed" this bug by hiding the canvas layer in css before the minScale is reached
+				// If adjusting the scale, update the css
+				if (!this.layers.parcels) {
+					this.layers.parcels = new VectorTileLayer("http://tiles.arcgis.com/tiles/F7DSX1DSNSiWmOqh/arcgis/rest/services/Maine_Parcels_Coastal/VectorTileServer", {
+						id: "mainMapParcelVector",
+						minScale: 36111.911040
 					});
-					this.layers.wildlife_habitat.setVisibleLayers([10]);
-					this.map.addLayer(this.layers.wildlife_habitat);
+					this.map.addLayer(this.layers.parcels);
+
+					// TODO Clean this up when deactivated 
+					this.parcelGraphics = new esri.layers.GraphicsLayer();
+					this.map.addLayer(this.parcelGraphics);
 				}
 
 				if (!this.layers.road_stream_crossing) {
@@ -245,16 +224,6 @@ define([
 					this.map.addLayer(this.layers.road_stream_crossing);
 				}
 
-				if (!this.layers.parcels) {
-					this.layers.parcels = new VectorTileLayer("http://tiles.arcgis.com/tiles/F7DSX1DSNSiWmOqh/arcgis/rest/services/Maine_Parcels_Coastal/VectorTileServer", {
-						minScale: 36111.911040
-					});
-					this.map.addLayer(this.layers.parcels);
-
-					// TODO Clean this up when deactivated 
-					this.parcelGraphics = new esri.layers.GraphicsLayer();
-					this.map.addLayer(this.parcelGraphics);
-				}
 
 				if (!this.layers.regions) {
 					// We use snapshot mode because we need all the features locally for querying attributes
@@ -353,20 +322,19 @@ define([
 					mapObject.addLayer(lidarlyr);
 				}
 
+				if (this.layers.current_conservation_lands.visible) {
+					var conLand = new ArcGISDynamicMapServiceLayer("http://cumulus-web-adapter-1827610810.us-west-1.elb.amazonaws.com/arcgis/rest/services/EasternDivision/SECUREDAREAS2014_S_A_Map_Service_2014_Public/MapServer");
+					mapObject.addLayer(conLand);
+				}
+
                	var visibleLayers = [].concat(this.layers.marshHabitat.visibleLayers)
                							.concat(this.layers.non_tidal_wetlands.visible ? this.layers.non_tidal_wetlands.visibleLayers : [])
                							.concat(this.layers.wildlife_habitat.visible ? this.layers.wildlife_habitat.visibleLayers : [])
                							.concat(this.layers.road_stream_crossing.visible ? this.layers.road_stream_crossing.visibleLayers : []);
 
-
                 var genLyr = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer");
 					genLyr.setVisibleLayers(visibleLayers);
 					mapObject.addLayer(genLyr);
-
-				if (this.layers.current_conservation_lands.visible) {
-					var conLand = new ArcGISDynamicMapServiceLayer("http://cumulus-web-adapter-1827610810.us-west-1.elb.amazonaws.com/arcgis/rest/services/EasternDivision/SECUREDAREAS2014_S_A_Map_Service_2014_Public/MapServer");
-					mapObject.addLayer(conLand);
-				}
 
 				var regionlyr = new FeatureLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/8", {
 					mode: FeatureLayer.MODE_SNAPSHOT,
@@ -431,12 +399,7 @@ define([
 					
 				});
 
-
-
-
 				printDeferred.resolve();
-
-
             },
 
 			render: function() {
@@ -487,7 +450,9 @@ define([
 					//labels: saltMarshLabels
 				});
 
-				this.$el.find('.info').tooltip();
+				this.$el.find('.info').tooltip({
+
+				});
 
 				this.bindEvents();
 			},
@@ -553,22 +518,6 @@ define([
 			},
 
 			setMarshScenario: function(idx) {
-				// Map the slider index to the layer index in the map service
-				var scenarioMap = {
-					0: 2,
-					1: 3,
-					2: 4,
-					3: 5,
-					4: 6
-				};
-
-				/*var scenarioMapParcels = {
-					0: 6,
-					1: 2,
-					2: 3,
-					3: 4,
-					4: 5
-				};*/
 
 				this.$el.find('.salt-marsh-control').attr('data-scenario-idx', idx);
 
@@ -606,8 +555,6 @@ define([
 				control.attr('data-scenario-wetlands', values.wetlands);
 
 				this.updateStatistics();
-
-				
 			},
 
 			updateStatistics: function() {
@@ -664,30 +611,31 @@ define([
 						self.$el.find('.region-label').html(parcel.attributes.Parcel_Name);
 
 						self.setMarshScenarioStats({
-								current: parcel.attributes.Current_Tidal_Marsh_Acres,
-								ft1: parcel.attributes.CurrentPlus1Ft_Acres,
-								ft2: parcel.attributes.CurrentPlus2Ft_Acres,
-								ft33: parcel.attributes.CurrentPlus3Ft_Acres,
-								ft6: parcel.attributes.CurrentPlus6Ft_Acres,
-								barriers: parcel.attributes.Barrier_Count,
-								wetlands: parcel.attributes.Non_Tidal_Wetland_Acres
-							});
+							current: parcel.attributes.Current_Tidal_Marsh_Acres,
+							ft1: parcel.attributes.CurrentPlus1Ft_Acres,
+							ft2: parcel.attributes.CurrentPlus2Ft_Acres,
+							ft33: parcel.attributes.CurrentPlus3Ft_Acres,
+							ft6: parcel.attributes.CurrentPlus6Ft_Acres,
+							barriers: parcel.attributes.Barrier_Count_100m,
+							wetlands: parcel.attributes.Non_Tidal_Wetland_Acres
+						});
+						self.updateStatistics();
 
 						self.parcelGraphics.clear();
-						var highlightGraphic = new Graphic(parcel.geometry, self.regionSymbolHover);
+						var highlightGraphic = new Graphic(parcel.geometry, self.highlightParcelSymbol);
 						self.parcelGraphics.add(highlightGraphic);
 
-						self.setSelectedMarshByParcel(parcel.attributes.Parcel_ID_Unique);
+						//self.setSelectedMarshByParcel(parcel.attributes.Parcel_ID_Unique);
 
 						// TODO Potential Race condition fix where clicking on a new parcel before this finishes loading
 						// TODO Selected Barriers don't show up in legend
-						self.qCrossings.where = "SiteID = '" + crossings.join("' OR SiteID = '") + "'";
+						/*self.qCrossings.where = "SiteID = '" + crossings.join("' OR SiteID = '") + "'";
 						self.qtCrossings.execute(self.qCrossings, function(crossing_result) {
 							_.each(crossing_result.features, function(feature) {
 								var crossingGraphic = new Graphic(feature.geometry, self.selectedBarrierSymbol);
 								self.parcelGraphics.add(crossingGraphic);
 							});
-						});
+						});*/
 
 					} else {
 						self.$el.find('.parcel-label').hide();
@@ -698,8 +646,8 @@ define([
 			},
 
 			setSelectedMarshByParcel: function(parcelId) {
-
-				if (parcelId) {
+				return;
+				/*if (parcelId) {
 					var marshHabitatParcelsDefinitions = [];
 					marshHabitatParcelsDefinitions[6] = "Parcel_ID_Unique = " + parcelId;
 					marshHabitatParcelsDefinitions[2] = "Parcel_ID_Unique = " + parcelId;
@@ -716,7 +664,7 @@ define([
 				} else {
 					//this.layers.non_tidal_wetlands_parcels.setVisibility(false);
 					//this.layers.marshHabitatParcels.setVisibility(false);
-				}
+				}*/
 			},
 
 			// http://stackoverflow.com/questions/2646385/add-a-thousands-separator-to-a-total-with-javascript-or-jquery
