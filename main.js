@@ -51,7 +51,7 @@ define([
 			allowIdentifyWhenActive: false,
 			hasCustomPrint: true,
 			usePrintPreviewMap: true,
-			previewMapSize: [768, 500],
+			previewMapSize: [500, 300],
 			layers: {},
 			defaultExtent: new Extent(-7959275, 5087981, -7338606, 5791202, new SpatialReference({wkid: 102100})),
 			selectedParcel: null,
@@ -410,21 +410,21 @@ define([
                 $printArea.append('<div id="print-cons-measures"><div class="title">Conservation Measures</div>' +
 					'<div class="stats"><div class="stat marsh">' +
 					'<div class="description">Tidal Marsh Area</div>' +
-					'<div><div class="icon grass"></div>' +
+					'<div><div class="icon"><img src="plugins/future-habitat-v2/icons/grass.png" style="width: 30px; height: 30px;"></div>' +
 					'<span class="value">22,371</span> <span class="units">acres</span>' +
 					'</div></div>' +
 					'' +
 					'<Br>' +
 					'<div class="stat wetlands">' +
 					'<div class="description">Non-Tidal Wetlands Area</div>' +
-					'<div><div class="icon bird"></div>' +
+					'<div><div class="icon"><img src="plugins/future-habitat-v2/icons/bird.png" style="width: 30px; height: 30px;"></div>' +
 					'<span class="value">406,231</span> <span class="units">acres</span>' +
 					'</div></div>' +
 					'' +
 					'<br>' +
 					'<div class="stat barriers">' +
 					'<div class="description">Road Crossing Barriers Nearby</div>' +
-					'<div><div class="icon fish"></div>' +
+					'<div><div class="icon"><img src="plugins/future-habitat-v2/icons/fish.png" style="width: 30px; height: 30px;"></div>' +
 					'<span class="value">2,198</span>' +
 					'</div></div>' +
                 	'</div></div>');
