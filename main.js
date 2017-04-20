@@ -158,6 +158,16 @@ define([
 					self.printButton.trigger('click');
 				});
 
+				this.$el.find('.export .notes').on('click', function() {
+					TINY.box.show({
+				        animate: true,
+				        url: 'plugins/future-habitat-v2/notes.html',
+				        fixed: true,
+				        width: 560,
+				        height: 700
+				    });
+				});
+
 			},
 
 			// TODO Set appropriate zoom levels for layers
