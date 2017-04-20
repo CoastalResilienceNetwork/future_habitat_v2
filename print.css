@@ -42,6 +42,10 @@
     	display: none !important;
     }
 
+    .sidebar-nav {
+    	display: none !important;
+    }
+
     /* Browsers don't print background images by default
        so this leaves an empty white box if we don't hide it */
     #plugin-print-preview-map .logo-med {
