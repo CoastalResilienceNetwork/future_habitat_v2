@@ -241,7 +241,9 @@ define([
 					this.map.addLayer(this.layers.parcels);
 
 					// TODO Clean this up when deactivated 
-					this.parcelGraphics = new esri.layers.GraphicsLayer();
+					this.parcelGraphics = new esri.layers.GraphicsLayer({
+						minScale: 36111.911040
+					});
 					this.map.addLayer(this.parcelGraphics);
 				}
 
@@ -314,7 +316,7 @@ define([
 
 				this.map.on('click', function(e) {
 					var zoom = self.map.getZoom();
-					if (zoom >= 13) {
+					if (zoom >= 14) {
 						self.getParcelByPoint(e.mapPoint);
 					}
 
