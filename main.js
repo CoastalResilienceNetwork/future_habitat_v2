@@ -415,6 +415,8 @@ define([
                 $printArea.find('.stat.wetlands .value').html(this.$el.find(".inland-wetlands .value").html());
                 $printArea.find('.stat.barriers .value').html(this.$el.find(".roadcrossing-potential .value").html());
 
+
+
                 $printArea.append('<div id="custom-print-legend"><div class="title">Legend</div></div>');
                 $printArea.append('<div id="custom-print-footer">' +
                 	'<div class="big-title">Coastal Resilience - Maine Future Habitat Mapping Tool</div>' +
@@ -437,7 +439,8 @@ define([
 						'</label>' +
 	                '</div>';
 
-	            $("#legend-container-0").clone().appendTo('#custom-print-legend');
+	            $("#legend-container-0").clone().removeClass('minimized').removeAttr('style').appendTo('#custom-print-legend');
+	            $("#custom-print-legend .legend-body").show();
 	            $('#print-cons-measures .title').html($(".main-controls h3").html()).find("br").remove();
 
 
