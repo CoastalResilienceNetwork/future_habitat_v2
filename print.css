@@ -92,6 +92,48 @@
 	    height: 3.2in;
     }
 
+    #print-cons-measures .stats {
+    	background-color: #fff;
+		padding: 0;
+    }
+
+    #print-cons-measures .stats .stat {
+     	height: 100%;
+    }
+
+    #print-cons-measures .stats .description {
+     	position: inherit;
+    	left: 5px;
+     	font-size: 13px;
+     	line-height: 20px;
+     	display: inline-block;
+    	white-space: pre-line;
+    	width: 100%;
+    	padding-top: 0 !important;
+    }
+
+    #print-cons-measures .stats .number {
+    	position: absolute;
+	    display: block;
+	    line-height: 22px;
+	    font-size: 14px;
+	    left: 0;
+	    top: 26px;
+    }
+
+    #print-cons-measures .stats .stat-info {
+    	display: none;
+    }
+    
+
+    #print-cons-measures .stats .pill {
+	    background-color: #fff;
+	    color: #5d6165;
+	    height: auto;
+	    width: auto;
+	    border-radius: 0;
+    }
+
     #custom-print-footer {
     	position: absolute;
 	    top: 6in;
