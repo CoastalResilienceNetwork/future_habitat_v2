@@ -89,10 +89,10 @@ define([
 					SimpleFillSymbol.STYLE_SOLID,
 					new SimpleLineSymbol(
 						SimpleLineSymbol.STYLE_SOLID,
-						new Color([125,125,125,0.35]),
-						1
+						new Color([204, 74, 212,0.75]),
+						4
 					),
-					new Color([80, 80, 80, 0.35])
+					new Color([204, 74, 212, 0.0])
 				);
 
 				this.selectedBarrierSymbol = new SimpleMarkerSymbol(
@@ -265,11 +265,11 @@ define([
 					this.map.addLayer(this.layers.regions);
 					
 					this.layers.regions.on('mouse-over', function(e) {
-						if (self.map.getZoom() < 10) {
+						//if (self.map.getZoom() < 14) {
 							self.regionGraphics.clear();
 							var highlightGraphic = new Graphic(e.graphic.geometry, self.regionSymbolHover, e.graphic.attributes);
 							self.regionGraphics.add(highlightGraphic);
-						}
+						//}
 						
 					});
 
@@ -277,10 +277,12 @@ define([
 					this.regionGraphics = new esri.layers.GraphicsLayer();
 					this.map.addLayer(this.regionGraphics);
 					this.regionGraphics.on('click', function(e) {
-						if (self.map.getZoom() < 10) {
+						self.$el.find('#chosenRegion').val(e.graphic.attributes.NAME).trigger("chosen:updated");
+						if (self.map.getZoom() < 14) {
 
-							self.map.setExtent(e.graphic.geometry.getExtent(), true);
-							self.$el.find('#chosenRegion').val(e.graphic.attributes.NAME).trigger("chosen:updated");
+							//self.map.setExtent(e.graphic.geometry.getExtent(), true);
+							self.$el.find('.region-label').html(e.graphic.attributes.NAME);
+							
 
 							self.setMarshScenarioStats({
 								current: e.graphic.attributes.Current_Tidal_Marsh_Acres,
@@ -297,9 +299,9 @@ define([
 
 					// TODO: Clean this up when deactivated
 					this.map.on('zoom-end', function(z) {
-						if (z.level >= 11) {
+						/*if (z.level >= 11) {
 							self.regionGraphics.clear();
-						}
+						}*/
 
 						if (z.level >= 13) {
 							self.$el.find('.parcel-label').show();
@@ -320,7 +322,7 @@ define([
 						self.getParcelByPoint(e.mapPoint);
 					}
 
-					if (zoom < 14 && zoom >= 11) {
+					/*if (zoom < 14 && zoom >= 11) {
 						self.qRegions.geometry = e.mapPoint;
 						self.qtRegions.execute(self.qRegions, function(results) {
 							if (results.features.length) {
@@ -337,7 +339,7 @@ define([
 								});
 							}
 						});
-					}
+					}*/
 
 				});
 
