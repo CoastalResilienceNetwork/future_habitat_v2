@@ -61,6 +61,10 @@ define([
 				declare.safeMixin(this, frameworkParameters);
 				this.$el = $(this.container);
 
+				// This hack removes a mismatch jquery-ui stylesheet.
+				// Hack needs to be removed when framework is upgraded
+				$('link[rel=stylesheet][href~="http://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css"]').remove();
+
 				this.render();
 				this.printButton.hide();
 
