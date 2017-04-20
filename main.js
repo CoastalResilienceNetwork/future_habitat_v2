@@ -98,6 +98,16 @@ define([
 				    new Color([30,144,255, 1])
 				);
 
+				this.highlightParcelSymbol = new SimpleFillSymbol(
+					SimpleFillSymbol.STYLE_SOLID,
+					new SimpleLineSymbol(
+						SimpleLineSymbol.STYLE_SOLID,
+						new Color([125,125,125,0.5]),
+						4
+					),
+					new Color([255, 255, 255, 0.0])
+				);
+
 				return this;
 			},
 
