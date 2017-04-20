@@ -153,6 +153,7 @@
 		right: -11px;
 		font-family: "FontAwesome";
 		font-size: 16px;
+		color: #2678ca;
 	}
 
 	.transparency-label .value {
@@ -173,6 +174,10 @@
 
 	.transparency-control.open .transparency-slider {
 		display: block;
+	}
+
+	.transparency-control[data-opacity="100"] .transparency-label::after {
+		color: #596165;
 	}
 
 	.transparency-slider .slider.ui-slider {
@@ -376,10 +381,10 @@
 				<div id="salt-marsh-slider" class="slider"></div>
 			</div>
 
-			<div class="transparency-control" data-layer="marshHabitat">
+			<div class="transparency-control" data-layer="marshHabitat" data-opacity="100">
 				<span class="transparency-header">Transparency</span>
 				<div class="transparency-label"><span class="value">100%</span></div>
-				<div class="transparency-slider">
+				<div class="transparency-slider" style="margin-top: -20px; margin-right: -16px;">
 					<div class="slider"></div>
 				</div>
 			</div>
@@ -434,30 +439,19 @@
 		<strong>Additional Layers:</strong>
 		<div class="description">Learn more about your area of interest by selecting from these additional information layers.</div>
 
+		
+
+		
+
+		
 		<div class="layer">
 			<label class="form-component">
-				<input type="checkbox" data-layer="current_conservation_lands">
+				<input type="checkbox" data-layer="road_stream_crossing">
 				<div class="check"></div>
-				<span class="form-text">Current Conservation Lands</span> <span class="fa fa-info-circle info" title="Displays public and private lands that are currently protected by conservation ownership or easement."></span>
+				<span class="form-text">Road-Stream Crossing Barriers</span> <span class="fa fa-info-circle info" title="Displays surveyed road crossings that have been identified as potential stream barriers within 300 feet of selected parcels. (Check the Road-Stream Crossing Barriers box below to view this information.)"></span>
 			</label>
 
-			<div class="transparency-control" data-layer="current_conservation_lands">
-				<span class="transparency-header">Transparency</span>
-				<div class="transparency-label"><span class="value">100%</span></div>
-				<div class="transparency-slider">
-					<div class="slider"></div>
-				</div>
-			</div>
-		</div>
-
-		<div class="layer">
-			<label class="form-component">
-				<input type="checkbox" data-layer="wildlife_habitat">
-				<div class="check"></div>
-				<span class="form-text">Wildlife and Habitat Concentrations</span> <span class="fa fa-info-circle info" title="Developed by the Maine Department of Inland Fisheries and Wildlife, this layer represents the relative concentration of select wildlife and habitat values on the landscape. Its purpose is to highlight the area’s conservation values as an aid in planning."></span>
-			</label>
-
-			<div class="transparency-control" data-layer="wildlife_habitat">
+			<div class="transparency-control" data-layer="road_stream_crossing" data-opacity="100">
 				<span class="transparency-header">Transparency</span>
 				<div class="transparency-label"><span class="value">100%</span></div>
 				<div class="transparency-slider">
@@ -473,7 +467,24 @@
 				<span class="form-text">Non-Tidal Wetlands</span> <span class="fa fa-info-circle info" title="Displays current fresh water wetland areas. Indicates CURRENT CONDITIONS ONLY AND DOES NOT PREDICT potential FUTURE CONDITIONS WITH SEA LEVEL CHANGE. (Check the Non-Tidal Wetlands box below to view this information.)"></span>
 			</label>
 
-			<div class="transparency-control" data-layer="non_tidal_wetlands">
+			<div class="transparency-control" data-layer="non_tidal_wetlands" data-opacity="100">
+				<span class="transparency-header">Transparency</span>
+				<div class="transparency-label"><span class="value">100%</span></div>
+				<div class="transparency-slider">
+					<div class="slider"></div>
+				</div>
+			</div>
+		</div>
+
+
+		<div class="layer">
+			<label class="form-component">
+				<input type="checkbox" data-layer="wildlife_habitat">
+				<div class="check"></div>
+				<span class="form-text">Wildlife and Habitat Concentrations</span> <span class="fa fa-info-circle info" title="Developed by the Maine Department of Inland Fisheries and Wildlife, this layer represents the relative concentration of select wildlife and habitat values on the landscape. Its purpose is to highlight the area’s conservation values as an aid in planning."></span>
+			</label>
+
+			<div class="transparency-control" data-layer="wildlife_habitat" data-opacity="100">
 				<span class="transparency-header">Transparency</span>
 				<div class="transparency-label"><span class="value">100%</span></div>
 				<div class="transparency-slider">
@@ -484,12 +495,12 @@
 
 		<div class="layer">
 			<label class="form-component">
-				<input type="checkbox" data-layer="road_stream_crossing">
+				<input type="checkbox" data-layer="current_conservation_lands">
 				<div class="check"></div>
-				<span class="form-text">Road-Stream Crossing Barriers</span> <span class="fa fa-info-circle info" title="Displays surveyed road crossings that have been identified as potential stream barriers within 300 feet of selected parcels. (Check the Road-Stream Crossing Barriers box below to view this information.)"></span>
+				<span class="form-text">Current Conservation Lands</span> <span class="fa fa-info-circle info" title="Displays public and private lands that are currently protected by conservation ownership or easement."></span>
 			</label>
 
-			<div class="transparency-control" data-layer="road_stream_crossing">
+			<div class="transparency-control" data-layer="current_conservation_lands" data-opacity="100">
 				<span class="transparency-header">Transparency</span>
 				<div class="transparency-label"><span class="value">100%</span></div>
 				<div class="transparency-slider">
@@ -505,7 +516,7 @@
 				<span class="form-text">High-Resolution Topography (LIDAR)</span> <span class="fa fa-info-circle info" title="Displays visual representation of relative elevations based on high-accuracy measurement technology."></span>
 			</label>
 
-			<div class="transparency-control" data-layer="lidar">
+			<div class="transparency-control" data-layer="lidar" data-opacity="100">
 				<span class="transparency-header">Transparency</span>
 				<div class="transparency-label"><span class="value">100%</span></div>
 				<div class="transparency-slider">

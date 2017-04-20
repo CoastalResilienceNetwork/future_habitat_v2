@@ -119,9 +119,10 @@ define([
 				var self = this;
 				this.$el.find('.transparency-label').on('mousedown', function() {
 					var control = $(this).parent('.transparency-control').toggleClass('open');
+					var dataLayer = control.attr('data-layer');
 					if (control.hasClass('open')) {
 						$('body').on('click.tranSlider', function(e) {
-							if ($(e.target).parents('.transparency-control').length || $(e.target).hasClass('transparency-control')) {
+							if ($(e.target).parents('.transparency-control[data-layer=' + dataLayer + ']').length || ($(e.target).hasClass('transparency-control') && $(e.target).attr('data-layer') === dataLayer)) {
 								// Do nothing
 							} else {
 								control.removeClass('open');
@@ -506,6 +507,7 @@ define([
             		range: false,
             		slide: function(e, ui) {
             			var control = $(e.target).parents('.transparency-control');
+            			control.attr('data-opacity', ui.value);
              			var layer = control.first().data('layer');
 						control.find('.value').html(ui.value + '%');
 						self.layers[layer].setOpacity(ui.value / 100);
