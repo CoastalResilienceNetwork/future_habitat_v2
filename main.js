@@ -106,7 +106,7 @@ define([
 					SimpleFillSymbol.STYLE_SOLID,
 					new SimpleLineSymbol(
 						SimpleLineSymbol.STYLE_SOLID,
-						new Color([125,125,125,0.5]),
+						new Color([255,204,0,0.5]),
 						4
 					),
 					new Color([255, 255, 255, 0.0])
@@ -262,7 +262,7 @@ define([
 					this.regionGraphics.on('click', function(e) {
 						if (self.map.getZoom() < 10) {
 
-							self.map.setExtent(e.graphic.geometry.getExtent());
+							self.map.setExtent(e.graphic.geometry.getExtent(), true);
 							self.$el.find('#chosenRegion').val(e.graphic.attributes.NAME).trigger("chosen:updated");
 
 							self.setMarshScenarioStats({
@@ -571,7 +571,7 @@ define([
 								wetlands: graphic.attributes.Non_Tidal_Wetland_Acres
 							});
 
-							self.map.setExtent(graphic.geometry.getExtent());
+							self.map.setExtent(graphic.geometry.getExtent(), true);
 							return false;
 						}
 					});
