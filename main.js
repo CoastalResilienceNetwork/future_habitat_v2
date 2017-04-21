@@ -18,6 +18,7 @@ define([
 	"esri/Color",
 	"esri/graphic",
     "dojo/dom",
+    "dojo/text!./print_template.html",
     "dojo/text!./template.html",
 	], function(declare,
 		PluginBase,
@@ -38,6 +39,7 @@ define([
 		Color,
 		Graphic,
 		dom,
+		print_template,
 		template
 	) {
 
@@ -423,46 +425,11 @@ define([
                 	mapObject.graphics.add(highlightGraphic);
                 }
 
-                $printArea.append('<div class="header"><div id="print-title-map"></div><div id="print-subtitle-map"></div></div>');
-                $printArea.append('<div id="print-cons-measures"><div class="title">Conservation Measures</div>' +
-					'<div class="stats"><div class="stat marsh">' +
-					'<div class="description">Tidal Marsh Area</div>' +
-					'<div><div class="icon"><img src="plugins/future-habitat-v2/icons/grass.png" style="width: 30px; height: 30px;"></div>' +
-					'<span class="value">22,371</span> <span class="units">acres</span>' +
-					'</div></div>' +
-					'' +
-					'<Br>' +
-					'<div class="stat wetlands">' +
-					'<div class="description">Non-Tidal Wetlands Area</div>' +
-					'<div><div class="icon"><img src="plugins/future-habitat-v2/icons/bird.png" style="width: 30px; height: 30px;"></div>' +
-					'<span class="value">406,231</span> <span class="units">acres</span>' +
-					'</div></div>' +
-					'' +
-					'<br>' +
-					'<div class="stat barriers">' +
-					'<div class="description">Road Crossing Barriers Nearby</div>' +
-					'<div><div class="icon"><img src="plugins/future-habitat-v2/icons/fish.png" style="width: 30px; height: 30px;"></div>' +
-					'<span class="value">2,198</span>' +
-					'</div></div>' +
-                	'</div></div>');
+                $printArea.html(_.template(print_template, {}));
 
                 $printArea.find('.stat.marsh .value').html(this.$el.find(".current-salt-marsh .value").html());
                 $printArea.find('.stat.wetlands .value').html(this.$el.find(".inland-wetlands .value").html());
                 $printArea.find('.stat.barriers .value').html(this.$el.find(".roadcrossing-potential .value").html());
-
-
-
-                $printArea.append('<div id="custom-print-legend"><div class="title">Legend</div></div>');
-                $printArea.append('<div id="custom-print-footer">' +
-                	'<div class="big-title">Coastal Resilience - Maine Future Habitat Mapping Tool</div>' +
-                	'<div class="custom-print-footer-content">Tidal Marsh Data: Maine Natural Areas Program (MNAP)<br>' +
-                	'SLR Projections: Maine Geological Survey, MNAP<br>' +
-                	'Application Development: The Nature Conservancy' +
-                	'<img class="print-logo" src="img/logo-nature-notagline.png" />' +
-                	'</div>');
-
-
-
 
                 var customFormHtml = '<div id="future-habitat-custom-print-form">' + 
 	                	'<label class="lbl-text">Title (Optional)</label><input type="text" id="print-title" />' +
@@ -734,13 +701,13 @@ define([
 
 						// TODO Potential Race condition fix where clicking on a new parcel before this finishes loading
 						// TODO Selected Barriers don't show up in legend
-						/*self.qCrossings.where = "SiteID = '" + crossings.join("' OR SiteID = '") + "'";
+						self.qCrossings.where = "SiteID = '" + crossings.join("' OR SiteID = '") + "'";
 						self.qtCrossings.execute(self.qCrossings, function(crossing_result) {
 							_.each(crossing_result.features, function(feature) {
 								var crossingGraphic = new Graphic(feature.geometry, self.selectedBarrierSymbol);
 								self.parcelGraphics.add(crossingGraphic);
 							});
-						});*/
+						});
 
 					} else {
 						self.$el.find('.parcel-label').hide();
