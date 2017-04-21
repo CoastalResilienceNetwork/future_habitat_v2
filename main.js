@@ -85,14 +85,14 @@ define([
 
 				// Setup graphic styles
 				
-				this.regionSymbolHover = new SimpleFillSymbol(
+				this.regionSymbol = new SimpleFillSymbol(
 					SimpleFillSymbol.STYLE_SOLID,
 					new SimpleLineSymbol(
 						SimpleLineSymbol.STYLE_SOLID,
-						new Color([204, 74, 212,0.75]),
-						4
+						new Color([255,204,0,1]),
+						5
 					),
-					new Color([204, 74, 212, 0.0])
+					new Color([255, 255, 255, 0])
 				);
 
 				this.selectedBarrierSymbol = new SimpleMarkerSymbol(
@@ -245,6 +245,8 @@ define([
 						minScale: 36111.911040
 					});
 					this.map.addLayer(this.parcelGraphics);
+
+				
 				}
 
 				if (!this.layers.road_stream_crossing) {
@@ -257,6 +259,18 @@ define([
 
 
 				if (!this.layers.regions) {
+
+					
+
+					this.selectedRegionGraphics = new esri.layers.GraphicsLayer();
+					this.map.addLayer(this.selectedRegionGraphics);
+
+					this.regionGraphics = new esri.layers.GraphicsLayer({
+						maxScale: 36111.911040
+					});
+					this.map.addLayer(this.regionGraphics);
+
+
 					// We use snapshot mode because we need all the features locally for querying attributes
 					this.layers.regions = new FeatureLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/8", {
 						mode: FeatureLayer.MODE_SNAPSHOT,
@@ -267,35 +281,38 @@ define([
 					this.layers.regions.on('mouse-over', function(e) {
 						//if (self.map.getZoom() < 14) {
 							self.regionGraphics.clear();
-							var highlightGraphic = new Graphic(e.graphic.geometry, self.regionSymbolHover, e.graphic.attributes);
+							var highlightGraphic = new Graphic(e.graphic.geometry, self.regionSymbol, e.graphic.attributes);
 							self.regionGraphics.add(highlightGraphic);
 						//}
 						
 					});
 
-					// TODO Clean this up when deactivated 
-					this.regionGraphics = new esri.layers.GraphicsLayer();
-					this.map.addLayer(this.regionGraphics);
-					this.regionGraphics.on('click', function(e) {
-						self.$el.find('#chosenRegion').val(e.graphic.attributes.NAME).trigger("chosen:updated");
-						if (self.map.getZoom() < 14) {
+					this.layers.regions.on('click', function(e) {
+						//if (self.map.getZoom() < 14) {
+							self.$el.find('#chosenRegion').val(e.graphic.attributes.NAME).trigger("chosen:updated");
 
-							//self.map.setExtent(e.graphic.geometry.getExtent(), true);
-							self.$el.find('.region-label').html(e.graphic.attributes.NAME);
-							
+							if (self.map.getZoom() < 14) {
+								self.selectedRegionGraphics.clear();
+								var highlightGraphic = new Graphic(e.graphic.geometry, self.regionSymbol, e.graphic.attributes);
+								self.selectedRegionGraphics.add(highlightGraphic);
 
-							self.setMarshScenarioStats({
-								current: e.graphic.attributes.Current_Tidal_Marsh_Acres,
-								ft1: e.graphic.attributes.CurrentPlus1Ft_Acres,
-								ft2: e.graphic.attributes.CurrentPlus2Ft_Acres,
-								ft33: e.graphic.attributes.CurrentPlus3Ft_Acres,
-								ft6: e.graphic.attributes.CurrentPlus6Ft_Acres,
-								barriers: e.graphic.attributes.Barrier_Count,
-								wetlands: e.graphic.attributes.Non_Tidal_Wetland_Acres
-							});
-							self.regionGraphics.clear();
-						}
+								self.$el.find('.region-label').html(e.graphic.attributes.NAME);
+								
+								self.setMarshScenarioStats({
+									current: e.graphic.attributes.Current_Tidal_Marsh_Acres,
+									ft1: e.graphic.attributes.CurrentPlus1Ft_Acres,
+									ft2: e.graphic.attributes.CurrentPlus2Ft_Acres,
+									ft33: e.graphic.attributes.CurrentPlus3Ft_Acres,
+									ft6: e.graphic.attributes.CurrentPlus6Ft_Acres,
+									barriers: e.graphic.attributes.Barrier_Count,
+									wetlands: e.graphic.attributes.Non_Tidal_Wetland_Acres
+								});
+
+							}						
 					});
+
+
+
 
 					// TODO: Clean this up when deactivated
 					this.map.on('zoom-end', function(z) {
@@ -708,6 +725,7 @@ define([
 						});
 						self.updateStatistics();
 
+						self.selectedRegionGraphics.clear();
 						self.parcelGraphics.clear();
 						var highlightGraphic = new Graphic(parcel.geometry, self.highlightParcelSymbol);
 						self.parcelGraphics.add(highlightGraphic);
