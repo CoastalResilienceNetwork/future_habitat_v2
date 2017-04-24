@@ -52,8 +52,8 @@ define([
 			size: 'custom',
 			allowIdentifyWhenActive: false,
 			hasCustomPrint: true,
-			usePrintPreviewMap: true,
-			previewMapSize: [500, 300],
+			//usePrintPreviewMap: true,
+			//previewMapSize: [500, 300],
 			layers: {},
 			defaultExtent: new Extent(-7959275, 5087981, -7338606, 5791202, new SpatialReference({wkid: 102100})),
 			selectedParcel: null,
@@ -383,93 +383,66 @@ define([
 			beforePrint: function(printDeferred, $printArea, mapObject) {
                 // We can short circuit the plugin print chain by simply
                 // rejecting this deferred object.
-                //printDeferred.reject();
+                var self = this;
+                printDeferred.reject();
 
-                if (this.layers.lidar.visible) {
-					var lidarlyr = new WMSLayer("http://mapserver.maine.gov/wms/mapserv.exe?map=c:/wms/topos.map", {
-						visibleLayers: ['medem2_hill','medem2_overview10_hill','medem2_overview30_hill','medem2_overview100_hill']
+                this.app.dispatcher.trigger('export-map:pane-' + this.app.paneNumber);
+
+                $("#map-print-sandbox style").remove();
+                $("#map-print-sandbox #print-page").remove();
+
+	            _.delay(function() {
+	            	$("#print-map-container").before(_.template(print_template, {}));
+
+	                $('#print-map-container .stat.marsh .value').html(self.$el.find(".current-salt-marsh .value").html());
+	                $('#print-map-container .stat.wetlands .value').html(self.$el.find(".inland-wetlands .value").html());
+	                $('#print-map-container .stat.barriers .value').html(self.$el.find(".roadcrossing-potential .value").html());
+
+	                var customFormHtml = '<div id="future-habitat-custom-print-form">' + 
+		                	'<label class="lbl-text">Title (Optional)</label><input type="text" id="print-title" />' +
+		                	'<label class="lbl-text">Subtitle (Optional)</label><input type="text" id="print-subtitle" />' + 
+		                	'<label class="form-component">' +
+								'<input id="print-cons" type="checkbox" checked>' +
+								'<div class="check"></div>' +
+								'<span class="form-text">Include Conservation Measures</span>' +
+							'</label>' +
+		                '</div>';
+
+		            $("#legend-container-0").clone().removeClass('minimized').removeAttr('style').appendTo('#custom-print-legend');
+		            $("#custom-print-legend .legend-body").show();
+		            $("#legend-container-0").removeAttr("id");
+		            $('#print-cons-measures .title').html($(".main-controls h3").html()).find("br").remove();
+
+	            	var injectionPoint = $('#export-print-preview-container .popover-content');
+	            	injectionPoint.before(customFormHtml);
+
+	            	$('#export-print-preview-container .popover-section').hide();
+
+	            	$("#print-title").on('blur', function(e) {
+						$("#print-title-map").html(e.target.value);
 					});
-					mapObject.addLayer(lidarlyr);
-				}
 
-				if (this.layers.current_conservation_lands.visible) {
-					var conLand = new ArcGISDynamicMapServiceLayer("http://cumulus-web-adapter-1827610810.us-west-1.elb.amazonaws.com/arcgis/rest/services/EasternDivision/SECUREDAREAS2014_S_A_Map_Service_2014_Public/MapServer");
-					mapObject.addLayer(conLand);
-				}
+					$("#print-subtitle").on('blur', function(e) {
+						$("#print-subtitle-map").html(e.target.value);
+					});
 
-               	var visibleLayers = [].concat(this.layers.marshHabitat.visibleLayers)
-               							.concat(this.layers.non_tidal_wetlands.visible ? this.layers.non_tidal_wetlands.visibleLayers : [])
-               							.concat(this.layers.wildlife_habitat.visible ? this.layers.wildlife_habitat.visibleLayers : [])
-               							.concat(this.layers.road_stream_crossing.visible ? this.layers.road_stream_crossing.visibleLayers : []);
+					$("#print-cons").on('change', function(e) {
+						if (e.target.checked) {
+							$("#print-cons-measures").show();
+							$("#custom-print-legend").css({height: 'calc(42% - 8px)'});
+						} else {
+							$("#print-cons-measures").hide();
+							$("#custom-print-legend").css({height: 'calc(100% - 4px)'});
+						}
+						
+					});
 
-                var genLyr = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer");
-					genLyr.setVisibleLayers(visibleLayers);
-					mapObject.addLayer(genLyr);
+	            }, 550);
+				
 
-				var regionlyr = new FeatureLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/8", {
-					mode: FeatureLayer.MODE_SNAPSHOT,
-					outFields: ['*']
-				});
+				
 
-                mapObject.addLayer(regionlyr);
-
-                // TODO Parcel vector Layer is not working in this map, so using dynamic service
-				var parcelLyr = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
-					minScale: 36111.911040
-				});
-				parcelLyr.setVisibleLayers([1]);
-				mapObject.addLayer(parcelLyr);
-
-				if (this.selectedParcel) {
-                	var highlightGraphic = new Graphic(this.selectedParcel.geometry, this.highlightParcelSymbol);
-                	mapObject.graphics.add(highlightGraphic);
-                }
-
-                $printArea.html(_.template(print_template, {}));
-
-                $printArea.find('.stat.marsh .value').html(this.$el.find(".current-salt-marsh .value").html());
-                $printArea.find('.stat.wetlands .value').html(this.$el.find(".inland-wetlands .value").html());
-                $printArea.find('.stat.barriers .value').html(this.$el.find(".roadcrossing-potential .value").html());
-
-                var customFormHtml = '<div id="future-habitat-custom-print-form">' + 
-	                	'<label class="lbl-text">Title (Optional)</label><input type="text" id="print-title" />' +
-	                	'<label class="lbl-text">Subtitle (Optional)</label><input type="text" id="print-subtitle" />' + 
-	                	'<label class="form-component">' +
-							'<input id="print-cons" type="checkbox" checked>' +
-							'<div class="check"></div>' +
-							'<span class="form-text">Include Conservation Measures</span>' +
-						'</label>' +
-	                '</div>';
-
-	            $("#legend-container-0").clone().removeClass('minimized').removeAttr('style').appendTo('#custom-print-legend');
-	            $("#custom-print-legend .legend-body").show();
-	            $('#print-cons-measures .title').html($(".main-controls h3").html()).find("br").remove();
-
-
-				var injectionPoint = $('#plugin-print-preview .print-preview-container');
-
-				injectionPoint.before(customFormHtml);
-
-				$("#print-title").on('blur', function(e) {
-					$("#print-title-map").html(e.target.value);
-				});
-
-				$("#print-subtitle").on('blur', function(e) {
-					$("#print-subtitle-map").html(e.target.value);
-				});
-
-				$("#print-cons").on('change', function(e) {
-					if (e.target.checked) {
-						$("#print-cons-measures").show();
-						$("#custom-print-legend").css({height: '4in'});
-					} else {
-						$("#print-cons-measures").hide();
-						$("#custom-print-legend").css({height: '7.2in'});
-					}
-					
-				});
-
-				printDeferred.resolve();
+				//printDeferred.resolve();
             },
 
 			render: function() {
