@@ -289,6 +289,10 @@ define([
 						
 					});
 
+					this.layers.regions.on('mouse-out', function() {
+						self.layers.regionGraphics.clear();
+					});
+
 					this.layers.regions.on('click', function(e) {
 						//if (self.map.getZoom() < 14) {
 							self.$el.find('#chosenRegion').val(e.graphic.attributes.NAME).trigger("chosen:updated");
