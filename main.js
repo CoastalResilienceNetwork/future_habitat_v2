@@ -243,10 +243,10 @@ define([
 					this.map.addLayer(this.layers.parcels);
 
 					// TODO Clean this up when deactivated 
-					this.parcelGraphics = new esri.layers.GraphicsLayer({
+					this.layers.parcelGraphics = new esri.layers.GraphicsLayer({
 						minScale: 36111.911040
 					});
-					this.map.addLayer(this.parcelGraphics);
+					this.map.addLayer(this.layers.parcelGraphics);
 
 				
 				}
@@ -264,13 +264,13 @@ define([
 
 					
 
-					this.selectedRegionGraphics = new esri.layers.GraphicsLayer();
-					this.map.addLayer(this.selectedRegionGraphics);
+					this.layers.selectedRegionGraphics = new esri.layers.GraphicsLayer();
+					this.map.addLayer(this.layers.selectedRegionGraphics);
 
-					this.regionGraphics = new esri.layers.GraphicsLayer({
+					this.layers.regionGraphics = new esri.layers.GraphicsLayer({
 						maxScale: 36111.911040
 					});
-					this.map.addLayer(this.regionGraphics);
+					this.map.addLayer(this.layers.regionGraphics);
 
 
 					// We use snapshot mode because we need all the features locally for querying attributes
@@ -282,9 +282,9 @@ define([
 					
 					this.layers.regions.on('mouse-over', function(e) {
 						//if (self.map.getZoom() < 14) {
-							self.regionGraphics.clear();
+							self.layers.regionGraphics.clear();
 							var highlightGraphic = new Graphic(e.graphic.geometry, self.regionSymbol, e.graphic.attributes);
-							self.regionGraphics.add(highlightGraphic);
+							self.layers.regionGraphics.add(highlightGraphic);
 						//}
 						
 					});
@@ -294,9 +294,9 @@ define([
 							self.$el.find('#chosenRegion').val(e.graphic.attributes.NAME).trigger("chosen:updated");
 
 							if (self.map.getZoom() < 14) {
-								self.selectedRegionGraphics.clear();
+								self.layers.selectedRegionGraphics.clear();
 								var highlightGraphic = new Graphic(e.graphic.geometry, self.regionSymbol, e.graphic.attributes);
-								self.selectedRegionGraphics.add(highlightGraphic);
+								self.layers.selectedRegionGraphics.add(highlightGraphic);
 
 								self.$el.find('.region-label').html(e.graphic.attributes.NAME);
 								
@@ -330,7 +330,7 @@ define([
 							self.$el.find('.parcel-label').hide();
 							self.$el.find('#parcel-id').html('').hide();
 							self.$el.find('.hint').show();
-							self.parcelGraphics.clear();
+							self.layers.parcelGraphics.clear();
 						}
 					});
 				}
@@ -558,7 +558,7 @@ define([
 
 				}
 
-				this.parcelGraphics.clear();
+				this.layers.parcelGraphics.clear();
 			},
 
 			setMarshScenario: function(idx) {
@@ -665,10 +665,10 @@ define([
 						});
 						self.updateStatistics();
 
-						self.selectedRegionGraphics.clear();
-						self.parcelGraphics.clear();
+						self.layers.selectedRegionGraphics.clear();
+						self.layers.parcelGraphics.clear();
 						var highlightGraphic = new Graphic(parcel.geometry, self.highlightParcelSymbol);
-						self.parcelGraphics.add(highlightGraphic);
+						self.layers.parcelGraphics.add(highlightGraphic);
 
 						//self.setSelectedMarshByParcel(parcel.attributes.Parcel_ID_Unique);
 
@@ -678,7 +678,7 @@ define([
 						self.qtCrossings.execute(self.qCrossings, function(crossing_result) {
 							_.each(crossing_result.features, function(feature) {
 								var crossingGraphic = new Graphic(feature.geometry, self.selectedBarrierSymbol);
-								self.parcelGraphics.add(crossingGraphic);
+								self.layers.parcelGraphics.add(crossingGraphic);
 							});
 						});
 
