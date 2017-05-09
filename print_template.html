@@ -1,262 +1,7 @@
-<style>
-
-   #map-print-sandbox {
-        width: 100% !important;
-        height: 100% !important;
-    }
-
-    #print-map-container {
-        width: 100% !important;
-        height: 100% !important;
-    }
-
-    #print-map-container > #export-print-preview-map {
-        width: 100% !important;
-        height: 100% !important;
-    }
-
-    #legend-container-0 {
-        display: none !important;
-        top: 80% !important;
-        height: 20% !important;
-    }
-
-    .above-legend {
-        bottom: 21% !important;
-    }
-
-    .page-bottom {
-        bottom: 1% !important;
-    }
-
-
-    #map-print-sandbox {
-        width: 100% !important;
-        height: 100% !important;
-    }
-
-    #print-map-container {
-        width: 100% !important;
-        height: 100% !important;
-    }
-
-    #print-map-container > #export-print-preview-map {
-        width: 100% !important;
-        height: 100% !important;
-    }
-
-
-#print-map-container > #export-print-preview-map {
-    width: calc(80% - 14px) !important;
-    height: calc(80% - 106px) !important;
-}
-
-#print-map-container {
-	height: 100% !important;
-	border: none;
-}
-
-.above-legend {
-	bottom: 12px !important;
-}
-
-@media print {
-	@page { 
-	    size: landscape;
-		margin: 13mm 13mm 13mm 13mm;
-	}
-
-	header {
-		display: none;
-	}
-
-	.print-sandbox-header {
-		display: none !important;
-	}
-
-	#map-print-sandbox {
-	    width: 100% !important;
-	    height: 100% !important;
-	}
-
-	#plugin-print-sandbox {
-		width: 100%;
-		height: 100%;
-	}
-
-	#print-page {
-		width: calc(100% - 6px);
-		height: calc(100% - 12px);
-	    page-break-after: always;
-	    border: 1px solid gray;
-	    padding: 5px;
-	}
-
-	.sidebar-nav {
-		display: none !important;
-	}
-
-	/* Browsers don't print background images by default
-	   so this leaves an empty white box if we don't hide it */
-	#plugin-print-preview-map .logo-med {
-		display: none;
-	}
-
-	div.header {
-		float: left;
-	    width: 80%;
-	    height: 80px;
-		border: 2px solid gray;
-	    background-color: #fff;
-	}
-
-	#print-title-map {
-		font-size: 22px;
-		padding: 5px 1px 0px 10px;
-	}
-
-	#print-subtitle-map {
-		padding: 0px 0px 0px 10px;
-		font-size: 19px;
-	}
-
-	#custom-print-legend {
-	    float: right;
-	    width: calc(20% - 14px);
-	    height: calc(42% - 8px);
-		border: 2px solid gray;
-	}
-
-	#print-cons-measures .title,
-	#custom-print-legend .title {
-		font-size: 16px;
-		padding-left: 0.05in;
-	}
-
-	#custom-print-legend .legend-header {
-		display: none;
-	}
-
-	.layer-legends,
-	.legend-layer {
-		width: 100% !important;
-		font-size: 13px;
-	}
-
-	.legend-layer img {
-	    width: 20px;
-	    height: 20px;
-	}
-
-	#print-cons-measures {
-		border: 2px solid gray;
-		float: right;
-	    height: calc(58% - 4px);
-	    width: calc(20% - 14px);
-	    clear: right;
-	    margin-top: 6px;
-	}
-
-	#print-cons-measures .stats {
-		background-color: #fff;
-		padding: 0;
-	}
-
-	#print-cons-measures .stats .stat {
-
-	}
-
-	#print-cons-measures .stats .description {
-	 	position: inherit;
-		left: 5px;
-	 	font-size: 13px;
-	 	line-height: 20px;
-	 	display: inline-block;
-		white-space: pre-line;
-		width: 100%;
-		padding-top: 0 !important;
-	}
-
-	#print-cons-measures .stats .number {
-		position: absolute;
-	    display: block;
-	    line-height: 22px;
-	    font-size: 14px;
-	    left: 0;
-	    top: 26px;
-	}
-
-	#print-cons-measures .stats .stat-info {
-		display: none;
-	}
-
-
-	#print-cons-measures .stats .pill {
-	    background-color: #fff;
-	    color: #5d6165;
-	    height: auto;
-	    width: auto;
-	    border-radius: 0;
-	}
-
-	#custom-print-footer {
-		height: calc(20% - 6px);
-	    top: 80%;
-	    position: relative;
-	    width: 80%;
-		border: 2px solid gray;
-		padding-left: 6px;
-	}
-
-	#custom-print-footer .big-title {
-		position: absolute;
-		font-size: 22px;
-	}
-
-	#custom-print-footer .custom-print-footer-content {
-		position: absolute;
-		top: 27px;
-		font-size: 15px;
-	}
-
-	#export-print-preview-map {
-	    visibility: visible;
-	    position: absolute;
-	    top: 88px;
-	    border: 2px solid gray;
-	    left: 6px;
-	    width: calc(80% - 14px) !important;
-	    height: calc(80% - 106px) !important;
-	}
-
-	#export-print-preview-map .map {
-
-	}
-
-	#print-map-container > #export-print-preview-map {
-		width: calc(80% - 14px) !important;
-	    height: calc(80% - 106px) !important;
-	}
-
-	.print-logo {
-		position: absolute;
-	    right: 0.1in;
-	    bottom: 0.05in;
-	}
-
-	.dojoxResizeHandle {
-		display: none;
-	}
-}
-
-
-</style>
-
 <div id="print-page">
 
 	<div class="header">
-		<div id="print-title-map"></div>
-		<div id="print-subtitle-map"></div>
+		<span id="print-title-map">Sample Title for testing</span> <span class="title-sep">-</span> <span id="print-subtitle-map">and a subtitle</span>
 	</div>
 
 	<div id="custom-print-legend">
@@ -267,33 +12,39 @@
 		<div class="title">Conservation Measures</div>
 		<div class="stats">
 			<div class="stat marsh">
-				<div class="description">Tidal Marsh Area</div>
-				<div>
-					<div class="icon">
-						<img src="plugins/future-habitat-v2/icons/grass.png" style="width: 30px; height: 30px;">
+				<div class="icon">
+					<img src="plugins/future-habitat-v2/icons/grass.png">
+				</div>
+				<div class="stat-container">
+					<div class="description">Tidal Marsh Area</div>
+					<div>
+						<span class="value"></span> <span class="units">acres</span>
 					</div>
-					<span class="value">22,371</span> <span class="units">acres</span>
 				</div>
 			</div>
 
 			<div class="stat wetlands">
-				<div class="description">Non-Tidal Wetlands Area</div>
-				<div>
-					<div class="icon">
-						<img src="plugins/future-habitat-v2/icons/bird.png" style="width:30px; height: 30px;">
+				<div class="icon">
+					<img src="plugins/future-habitat-v2/icons/bird.png">
+				</div>
+				<div class="stat-container">
+					<div class="description">Non-Tidal Wetlands Area</div>
+					<div>
+						<span class="value"></span> <span class="units">acres</span>
 					</div>
-					<span class="value">406,231</span> <span class="units">acres</span>
 				</div>
 			</div>
 
 
 			<div class="stat barriers">
-				<div class="description">Road Crossing Barriers Nearby</div>
-				<div>
-					<div class="icon">
-						<img src="plugins/future-habitat-v2/icons/fish.png" style="width:30px; height: 30px;">
+				<div class="icon">
+					<img src="plugins/future-habitat-v2/icons/fish.png">
+				</div>
+				<div class="stat-container">
+					<div class="description">Road Crossing Barriers Nearby</div>
+					<div>
+						<span class="value"></span>
 					</div>
-					<span class="value">2,198</span>
 				</div>
 			</div>
 		</div>
@@ -302,11 +53,10 @@
 	<div id="custom-print-footer">
 		<div class="big-title">Coastal Resilience - Maine Future Habitat Mapping Tool</div>
 		<div class="custom-print-footer-content">
-			Tidal Marsh Data: Maine Natural Areas Program (MNAP)<br>
-			SLR Projections: Maine Geological Survey, MNAP<br>
-			Application Development: The Nature Conservancy
+			Tidal Marsh Data: Maine Natural Areas Program (MNAP) - SLR Projections: Main Geological Survey, MNAP - Application Development: The Nature Conservancy
 		</div>
-		<img class="print-logo" src="img/logo-nature-notagline.png" />
+	</div>
+	<div class="print-logo">
+	<img src="img/logo-nature-notagline.png">
+	</div>
 </div>
-
-<div id="plugin-print-preview-map"></div>

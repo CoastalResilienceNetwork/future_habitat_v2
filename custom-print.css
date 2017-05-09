@@ -1,0 +1,167 @@
+header,
+#custom-launchpad-content,
+.nav-apps,
+.sidebar,
+.control-container,
+.subregion-tooltip,
+.esriSimpleSlider,
+.map .legend,
+.map .logo-med {
+	display: none !important;
+}
+
+.flex-container {
+	display: block;
+    position: absolute;
+    top: 10mm;
+    height: 157mm;
+    width: 202mm;
+    left: 5mm;
+}
+
+@media print {
+	@page { 
+		/* 215.9 by 279.4 mm */
+	    size: 279.4mm 215.9mm;
+		margin: 0;
+
+	}
+
+	.tmask,
+	.tbox {
+		display: none !important;
+	}
+
+	body #print-page {
+		display: block;
+		padding: 10mm 5mm;
+    	height: 100%;
+	}
+
+	div.header {
+	    width: 202mm;
+	    padding-left: 5mm;
+	    display: inline-block;
+	}
+	#custom-print-footer {
+	    position: absolute;
+	    padding-left: 6px;
+	    top: 200mm;
+	    width: 202mm;
+	}
+	#custom-print-legend {
+	    position: absolute;
+    	left: 212mm;
+    	width: 62mm;
+	}
+	.layer-legends {
+		margin-top: 4mm;
+	}
+	.legend-layer {
+		border-bottom: 1px solid #b7b5b5;
+	}
+	.legend-layer:last-child {
+		border-bottom: none;
+	}
+	#print-cons-measures .stats {
+		padding: 0;
+		background-color: #fff;
+		border-bottom: 2px solid #b7b5b5;
+	}
+	#print-cons-measures .stats .stat  {
+		margin-right: 0px;
+	}
+	#print-cons-measures .stats .stat.marsh {
+		width: 55mm;
+	}
+	#print-cons-measures .stats .stat.wetlands {
+		width: 68mm;
+	}
+	#print-cons-measures .stats .stat .icon img {
+		width: 75px;
+		height: 75px;
+	}
+	#print-cons-measures .stats .stat .stat-container,
+	#print-cons-measures .stats .stat .icon {
+		float: left;
+	}
+
+	#print-cons-measures .stats .stat .value {
+		font-size: 14pt;
+	    font-weight: bold;
+	}
+	#print-cons-measures .stats .stat .units {
+	    font-size: 12pt;
+	    font-weight: bold;
+	}
+
+	#print-cons-measures .stats .stat .stat-container {
+		padding-left: 2mm;
+    	padding-top: 4mm;
+	}
+	#print-cons-measures {
+		position: absolute;
+	    padding-left: 6px;
+	    top: 170mm;
+	    width: 202mm;
+	}
+	.big-title {
+		font-weight: bold;
+		font-size: 10pt;
+	}
+	.custom-print-footer-content {
+		font-size: 7pt;
+	}
+	.esriScalebar {
+		height: 50px;
+	}
+	.print-logo {
+		position: absolute;
+	    right: 10mm;
+	    bottom: 5mm;
+	}
+	.print-logo img {
+		width: 150px;
+	}
+
+	/* Double check */
+
+	#print-title-map {
+		font-size: 22px;
+	}
+
+	#print-subtitle-map {
+		font-size: 19px;
+	}
+
+	#print-cons-measures .title,
+	#custom-print-legend .title {
+		font-size: 16px;
+		padding-left: 0.05in;
+	}
+
+	#custom-print-legend .legend-header {
+		display: none;
+	}
+
+	.layer-legends,
+	.legend-layer {
+		width: 100% !important;
+		font-size: 13px;
+	}
+
+	.legend-layer img {
+	    width: 20px;
+	    height: 20px;
+	}
+
+
+	#print-cons-measures .stats .stat-info {
+		display: none;
+	}
+
+	.dojoxResizeHandle {
+		display: none;
+	}
+
+}

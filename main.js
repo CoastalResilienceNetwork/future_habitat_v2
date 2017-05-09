@@ -161,8 +161,83 @@ define([
 				});
 
 				this.$el.find('.export .print').on('click', function() {
-					self.printButton.trigger('click');
+					// self.printButton.trigger('click');
+					TINY.box.show({
+				        animate: true,
+				        url: 'plugins/future-habitat-v2/print-setup.html',
+				        fixed: true,
+				        width: 390,
+				        height: 330,
+				        openjs: function(a) {
+				        	self.center = self.map.extent.getCenter();
+				        	$('#generate-print').on('click', function() {
+								var link = $('<link />')
+									.attr('href', 'plugins/future-habitat-v2/custom-print.css')
+									.attr('rel', 'stylesheet')
+									.attr('class', 'future-habitat-custom-print');
+
+								link.on('load', function() {
+									
+									self.map.resize(true);
+									// RESIZE callback promise is not resolving.  ArcGIS 3.20 version bug?
+									self.map.centerAt(self.center);
+									_.delay(function() {
+										if (self.map.updating) {
+											self.finishloading = self.map.on('update-end', function() {
+												self.finishloading.remove();
+												window.print();
+												TINY.box.hide();
+											})
+										} else {
+											window.print();
+											TINY.box.hide();
+										}
+
+										// Default ESRI pan animation duration is 350.  May want to 
+										// just disable animations for this function
+									}, 550)
+									
+
+
+								})
+								$('head').append(link);
+
+								$("#print-title-map").html($("#print-title").val());
+								$("#print-subtitle-map").html($("#print-subtitle").val());
+								if ($("#print-subtitle").val().length === 0) {
+									$('.title-sep').hide();
+								}
+							});
+
+				        	$("body").append(_.template(print_template, {}));
+				        	$("#legend-container-0").clone().removeAttr("id")
+				        		.removeClass('minimized')
+				        		.removeAttr('style')
+				        		.appendTo('#custom-print-legend');
+			                $('#print-cons-measures .stat.marsh .value').html(self.$el.find(".current-salt-marsh .value").html());
+			                $('#print-cons-measures .stat.wetlands .value').html(self.$el.find(".inland-wetlands .value").html());
+			                $('#print-cons-measures .stat.barriers .value').html(self.$el.find(".roadcrossing-potential .value").html());
+				            $("#custom-print-legend .legend-body").show();
+				            $('#print-cons-measures .title').html($(".main-controls h3").html()).find("br").remove();
+
+				        },
+				        closejs: function() {
+				        	$("#print-page").remove();
+				        	$(".future-habitat-custom-print").remove();
+			        		self.map.resize(true);
+		        			self.map.centerAt(self.center);
+			        		$('#generate-print').off()
+			        		if (self.finishloading) {
+			        			self.finishloading.remove();
+			        		}
+			        	}
+
+				    });
+
+				    
 				});
+
+
 
 				this.$el.find('.export .notes').on('click', function() {
 					TINY.box.show({
@@ -202,9 +277,10 @@ define([
 				}
 
 				if (!this.layers.current_conservation_lands) {
-					this.layers.current_conservation_lands = new ArcGISDynamicMapServiceLayer("http://cumulus-web-adapter-1827610810.us-west-1.elb.amazonaws.com/arcgis/rest/services/EasternDivision/SECUREDAREAS2014_S_A_Map_Service_2014_Public/MapServer", {
+					this.layers.current_conservation_lands = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
 						visible: false
 					});
+					this.layers.current_conservation_lands.setVisibleLayers([8]);
 					this.map.addLayer(this.layers.current_conservation_lands);
 				}
 				
@@ -212,7 +288,7 @@ define([
 					this.layers.wildlife_habitat = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
 						visible: false
 					});
-					this.layers.wildlife_habitat.setVisibleLayers([10]);
+					this.layers.wildlife_habitat.setVisibleLayers([11]);
 					this.map.addLayer(this.layers.wildlife_habitat);
 				}
 
@@ -274,7 +350,7 @@ define([
 
 
 					// We use snapshot mode because we need all the features locally for querying attributes
-					this.layers.regions = new FeatureLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/8", {
+					this.layers.regions = new FeatureLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/9", {
 						mode: FeatureLayer.MODE_SNAPSHOT,
 						outFields: ['*']
 					});
