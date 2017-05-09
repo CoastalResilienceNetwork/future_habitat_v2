@@ -371,6 +371,11 @@ define([
 
 					this.layers.regions.on('click', function(e) {
 						//if (self.map.getZoom() < 14) {
+
+							if (e.graphic.attributes.NAME !== self.$el.find('#chosenRegion').val() && self.map.getZoom() < 14) {
+								self.zoomToRegion(e.graphic.attributes.NAME);
+							}
+
 							self.$el.find('#chosenRegion').val(e.graphic.attributes.NAME).trigger("chosen:updated");
 
 							if (self.map.getZoom() < 14) {
