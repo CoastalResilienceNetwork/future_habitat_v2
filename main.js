@@ -51,9 +51,6 @@ define([
 			width: 425,
 			size: 'custom',
 			allowIdentifyWhenActive: false,
-			hasCustomPrint: true,
-			//usePrintPreviewMap: true,
-			//previewMapSize: [500, 300],
 			layers: {},
 			defaultExtent: new Extent(-7959275, 5087981, -7338606, 5791202, new SpatialReference({wkid: 102100})),
 			selectedParcel: null,
@@ -68,7 +65,6 @@ define([
 				$('link[rel=stylesheet][href~="http://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css"]').remove();
 
 				this.render();
-				this.printButton.hide();
 
 				// Setup query handles
 				this.qtParcels = new QueryTask('http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/1');
@@ -162,7 +158,6 @@ define([
 				});
 
 				this.$el.find('.export .print').on('click', function() {
-					// self.printButton.trigger('click');
 					TINY.box.show({
 				        animate: true,
 				        url: 'plugins/future-habitat-v2/print-setup.html',
@@ -178,9 +173,13 @@ define([
 									.attr('class', 'future-habitat-custom-print');
 
 								link.on('load', function() {
-									
+									var defaultPanDuration = esriConfig.defaults.map.panDuration;
+									var defaultPanRate = esriConfig.defaults.map.panRate;
 									self.map.resize(true);
 									// RESIZE callback promise is not resolving.  ArcGIS 3.20 version bug?
+
+									esriConfig.defaults.map.panDuration = 1;
+									esriConfig.defaults.map.panRate = 1;
 									self.map.centerAt(self.center);
 									_.delay(function() {
 										if (self.map.updating) {
@@ -195,10 +194,9 @@ define([
 										}
 
 										// Default ESRI pan animation duration is 350.  May want to 
-										// just disable animations for this function
-									}, 550)
-									
-
+										esriConfig.defaults.map.panRate = defaultPanRate;
+										esriConfig.defaults.map.panDuration = defaultPanDuration;
+									}, 850)
 
 								})
 								$('head').append(link);
@@ -226,19 +224,18 @@ define([
 				        	$("#print-page").remove();
 				        	$(".future-habitat-custom-print").remove();
 			        		self.map.resize(true);
-		        			self.map.centerAt(self.center);
+		        			
 			        		$('#generate-print').off()
 			        		if (self.finishloading) {
 			        			self.finishloading.remove();
 			        		}
+			        		self.map.centerAt(self.center);
 			        	}
 
 				    });
 
 				    
 				});
-
-
 
 				this.$el.find('.export .notes').on('click', function() {
 					TINY.box.show({

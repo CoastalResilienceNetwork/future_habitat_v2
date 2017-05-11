@@ -17,6 +17,7 @@ header,
     height: 157mm;
     width: 202mm;
     left: 5mm;
+    overflow: hidden;
 }
 
 @media print {
