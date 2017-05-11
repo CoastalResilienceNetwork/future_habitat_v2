@@ -239,7 +239,7 @@
     color: #fff;
     border-radius: 30px;
     height: 60px;
-    width: 352px;
+    width: 365px;
 }
 
 .future-habitat .stats .stat-info {
@@ -266,11 +266,12 @@
     position: absolute;
     left: 13px;
 	line-height: 60px;
-	font-size: 18px;
+	font-size: 17px;
 }
 
 .future-habitat .stats .number .value {
-	font-size: 22px;
+	font-size: 21px;
+	letter-spacing: -0.5px;
 	font-weight: bold;
 	vertical-align: middle;
 }
@@ -310,7 +311,7 @@
     line-height: 24px;
     font-size: 18px;
     position: absolute;
-    left: 196px;
+    left: 203px;
 	width: 151px;
     display: block;
     padding-top: 6px;
