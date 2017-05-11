@@ -20,6 +20,10 @@ header,
     overflow: hidden;
 }
 
+body[data-con-measures=false] .flex-container {
+	height: 183mm;
+}
+
 @media print {
 	@page { 
 		/* 215.9 by 279.4 mm */
@@ -106,6 +110,11 @@ header,
 	    top: 170mm;
 	    width: 202mm;
 	}
+
+	body[data-con-measures=false] #print-cons-measures {
+		display: none;
+	}
+
 	.big-title {
 		font-weight: bold;
 		font-size: 10pt;

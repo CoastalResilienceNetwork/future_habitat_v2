@@ -172,9 +172,15 @@ define([
 									.attr('rel', 'stylesheet')
 									.attr('class', 'future-habitat-custom-print');
 
+								$("body").attr('data-con-measures', $('#print-cons').is(':checked'));
+
 								link.on('load', function() {
 									var defaultPanDuration = esriConfig.defaults.map.panDuration;
 									var defaultPanRate = esriConfig.defaults.map.panRate;
+
+
+										
+
 									self.map.resize(true);
 									// RESIZE callback promise is not resolving.  ArcGIS 3.20 version bug?
 
@@ -223,6 +229,7 @@ define([
 				        closejs: function() {
 				        	$("#print-page").remove();
 				        	$(".future-habitat-custom-print").remove();
+				        	$("body").removeAttr('data-con-measures');
 			        		self.map.resize(true);
 		        			
 			        		$('#generate-print').off()
@@ -234,7 +241,6 @@ define([
 
 				    });
 
-				    
 				});
 
 				this.$el.find('.export .notes').on('click', function() {
