@@ -99,13 +99,13 @@ define([
 
 				this.selectedBarrierSymbol = new SimpleMarkerSymbol(
 					SimpleMarkerSymbol.STYLE_CIRCLE,
-					20,
+					17,
 				    new SimpleLineSymbol(
-				    	SimpleLineSymbol.STYLE_SOLID,
-				    	new Color([255,0,0]),
-				    	1
-				    ),
-				    new Color([30,144,255, 1])
+						SimpleLineSymbol.STYLE_SOLID,
+						new Color([255, 235, 59, 1]),
+						3
+					),
+					new Color([225, 96, 82, 1])
 				);
 
 				this.highlightParcelSymbol = new SimpleFillSymbol(
@@ -117,6 +117,7 @@ define([
 					),
 					new Color([255, 255, 255, 0.0])
 				);
+				$(this.legendContainer).html('<div class="selected-barrier-lgnd" style="display: none;"><svg width="20" height="20"><circle fill="rgb(225, 96, 82)" stroke="rgb(255, 235, 59)" stroke-width="3" cx="10" cy="10" r="7"></circle></svg> <span style="position: relative; top:-5px;">Selected Barrier</span></div>');
 
 				return this;
 			},
@@ -327,12 +328,20 @@ define([
 				
 				}
 
+
+
 				if (!this.layers.road_stream_crossing) {
+
 					this.layers.road_stream_crossing = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
 						visible: false
 					});
 					this.layers.road_stream_crossing.setVisibleLayers([0]);
 					this.map.addLayer(this.layers.road_stream_crossing);
+
+					this.layers.crossingGraphics = new esri.layers.GraphicsLayer({
+						minScale: 36111.911040
+					});
+					this.map.addLayer(this.layers.crossingGraphics);
 				}
 
 
@@ -416,6 +425,9 @@ define([
 							self.$el.find('#parcel-id').html('').hide();
 							self.$el.find('.hint').show();
 							self.layers.parcelGraphics.clear();
+							self.layers.crossingGraphics.clear();
+							$('.selected-barrier-lgnd').hide();
+							self.map.resize();
 						}
 					});
 				}
@@ -579,6 +591,9 @@ define([
 				}
 
 				this.layers.parcelGraphics.clear();
+				this.layers.crossingGraphics.clear();
+				$('.selected-barrier-lgnd').hide();
+				self.map.resize();
 			},
 
 			setMarshScenario: function(idx) {
@@ -687,6 +702,7 @@ define([
 
 						self.layers.selectedRegionGraphics.clear();
 						self.layers.parcelGraphics.clear();
+						self.layers.crossingGraphics.clear();
 						var highlightGraphic = new Graphic(parcel.geometry, self.highlightParcelSymbol);
 						self.layers.parcelGraphics.add(highlightGraphic);
 
@@ -698,8 +714,14 @@ define([
 						self.qtCrossings.execute(self.qCrossings, function(crossing_result) {
 							_.each(crossing_result.features, function(feature) {
 								var crossingGraphic = new Graphic(feature.geometry, self.selectedBarrierSymbol);
-								self.layers.parcelGraphics.add(crossingGraphic);
+								self.layers.crossingGraphics.add(crossingGraphic);
 							});
+							if (crossing_result.features.length) {
+								$('.selected-barrier-lgnd').show();
+							} else {
+								$('.selected-barrier-lgnd').hide();
+							}
+							self.map.resize();
 						});
 
 					} else {
