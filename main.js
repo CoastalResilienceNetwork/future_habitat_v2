@@ -224,9 +224,9 @@ define([
 
 				        },
 				        closejs: function() {
-				        	//$("#print-page").remove();
-				        	//$(".future-habitat-custom-print").remove();
-				        	//$("body").removeAttr('data-con-measures');
+				        	$("#print-page").remove();
+				        	$(".future-habitat-custom-print").remove();
+				        	$("body").removeAttr('data-con-measures');
 			        		self.map.resize(true);
 		        			
 			        		$('#generate-print').off()
