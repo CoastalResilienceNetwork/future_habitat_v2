@@ -110,6 +110,8 @@
 .select-controls .right-side #parcel-id {
 	font-size: 13px;
 	line-height: 30px;
+	font-family: 'Archivo Narrow', 'Arial Narrow', Arial, Helvetica, sans-serif;
+    font-weight: bold;
 }
 
 .select-controls .right-side .hint {
