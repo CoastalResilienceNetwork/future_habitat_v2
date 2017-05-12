@@ -183,7 +183,16 @@ define([
 
 									esriConfig.defaults.map.panDuration = 1;
 									esriConfig.defaults.map.panRate = 1;
-									self.map.centerAndZoom(self.center, self.map.getZoom());
+									
+
+									if (self.selectedParcel && self.map.getZoom() >= 14) {
+										var parcelCenter = self.selectedParcel.geometry.getCentroid();
+										self.map.centerAndZoom(parcelCenter, self.map.getZoom());
+									} else {
+										self.map.centerAndZoom(self.center, self.map.getZoom());
+									}
+
+
 									_.delay(function() {
 										if (self.map.updating) {
 											self.finishloading = self.map.on('update-end', function() {
@@ -325,11 +334,7 @@ define([
 						minScale: 36111.911040
 					});
 					this.map.addLayer(this.layers.parcelGraphics);
-
-				
 				}
-
-
 
 				if (!this.layers.road_stream_crossing) {
 
@@ -347,8 +352,6 @@ define([
 
 
 				if (!this.layers.regions) {
-
-					
 
 					this.layers.selectedRegionGraphics = new esri.layers.GraphicsLayer();
 					this.map.addLayer(this.layers.selectedRegionGraphics);
@@ -406,6 +409,7 @@ define([
 							self.$el.find('#parcel-id').html('').hide();
 							self.$el.find('.hint').show();
 							self.layers.parcelGraphics.clear();
+							self.selectedParcel = null;
 							self.layers.crossingGraphics.clear();
 							$('.selected-barrier-lgnd').hide();
 							self.map.resize();
@@ -580,6 +584,7 @@ define([
 				}
 
 				this.layers.parcelGraphics.clear();
+				self.selectedParcel = null;
 				this.layers.crossingGraphics.clear();
 				$('.selected-barrier-lgnd').hide();
 				self.map.resize();
