@@ -178,15 +178,12 @@ define([
 									var defaultPanDuration = esriConfig.defaults.map.panDuration;
 									var defaultPanRate = esriConfig.defaults.map.panRate;
 
-
-										
-
 									self.map.resize(true);
 									// RESIZE callback promise is not resolving.  ArcGIS 3.20 version bug?
 
 									esriConfig.defaults.map.panDuration = 1;
 									esriConfig.defaults.map.panRate = 1;
-									self.map.centerAt(self.center);
+									self.map.centerAndZoom(self.center, self.map.getZoom());
 									_.delay(function() {
 										if (self.map.updating) {
 											self.finishloading = self.map.on('update-end', function() {
@@ -227,16 +224,17 @@ define([
 
 				        },
 				        closejs: function() {
-				        	$("#print-page").remove();
-				        	$(".future-habitat-custom-print").remove();
-				        	$("body").removeAttr('data-con-measures');
+				        	//$("#print-page").remove();
+				        	//$(".future-habitat-custom-print").remove();
+				        	//$("body").removeAttr('data-con-measures');
 			        		self.map.resize(true);
 		        			
 			        		$('#generate-print').off()
 			        		if (self.finishloading) {
 			        			self.finishloading.remove();
 			        		}
-			        		self.map.centerAt(self.center);
+			        		self.map.centerAndZoom(self.center, self.map.getZoom());
+			        		self.center = null;
 			        	}
 
 				    });
@@ -382,32 +380,12 @@ define([
 					});
 
 					this.layers.regions.on('click', function(e) {
-						//if (self.map.getZoom() < 14) {
+						if (e.graphic.attributes.NAME !== self.$el.find('#chosenRegion').val() && self.map.getZoom() < 14) {
+							self.zoomToRegion(e.graphic.attributes.NAME);
+						}
 
-							if (e.graphic.attributes.NAME !== self.$el.find('#chosenRegion').val() && self.map.getZoom() < 14) {
-								self.zoomToRegion(e.graphic.attributes.NAME);
-							}
+						self.$el.find('#chosenRegion').val(e.graphic.attributes.NAME).trigger("chosen:updated");
 
-							self.$el.find('#chosenRegion').val(e.graphic.attributes.NAME).trigger("chosen:updated");
-
-							if (self.map.getZoom() < 14) {
-								self.layers.selectedRegionGraphics.clear();
-								var highlightGraphic = new Graphic(e.graphic.geometry, self.regionSymbol, e.graphic.attributes);
-								self.layers.selectedRegionGraphics.add(highlightGraphic);
-
-								self.$el.find('.region-label').html(e.graphic.attributes.NAME);
-								
-								self.setMarshScenarioStats({
-									current: e.graphic.attributes.Current_Tidal_Marsh_Acres,
-									ft1: e.graphic.attributes.CurrentPlus1Ft_Acres,
-									ft2: e.graphic.attributes.CurrentPlus2Ft_Acres,
-									ft33: e.graphic.attributes.CurrentPlus3Ft_Acres,
-									ft6: e.graphic.attributes.CurrentPlus6Ft_Acres,
-									barriers: e.graphic.attributes.Barrier_Count,
-									wetlands: e.graphic.attributes.Non_Tidal_Wetland_Acres
-								});
-
-							}						
 					});
 
 
@@ -462,7 +440,6 @@ define([
 
 				});
 
-				//this.zoomToRegion('Maine');
 			},
 
 			deactivate: function() {
@@ -540,6 +517,7 @@ define([
 				var self = this;
 
 				this.$el.find('.region-label').html(region);
+				this.layers.selectedRegionGraphics.clear();
 
 				if (region === 'Maine') {
 					// TODO When initially activated, the region layer isn't loaded, so stats are unavailable
@@ -575,16 +553,24 @@ define([
 
 							// TODO Select based off of current salt marsh scenario
 							// TODO Add commas as thousands selector
-						
-							self.setMarshScenarioStats({
-								current: graphic.attributes.Current_Tidal_Marsh_Acres,
-								ft1: graphic.attributes.CurrentPlus1Ft_Acres,
-								ft2: graphic.attributes.CurrentPlus2Ft_Acres,
-								ft33: graphic.attributes.CurrentPlus3Ft_Acres,
-								ft6: graphic.attributes.CurrentPlus6Ft_Acres,
-								barriers: graphic.attributes.Barrier_Count,
-								wetlands: graphic.attributes.Non_Tidal_Wetland_Acres
-							});
+
+							if (self.map.getZoom() < 14) {
+								var highlightGraphic = new Graphic(graphic.geometry, self.regionSymbol, graphic.attributes);
+								self.layers.selectedRegionGraphics.add(highlightGraphic);
+
+								self.$el.find('.region-label').html(graphic.attributes.NAME);
+								
+								self.setMarshScenarioStats({
+									current: graphic.attributes.Current_Tidal_Marsh_Acres,
+									ft1: graphic.attributes.CurrentPlus1Ft_Acres,
+									ft2: graphic.attributes.CurrentPlus2Ft_Acres,
+									ft33: graphic.attributes.CurrentPlus3Ft_Acres,
+									ft6: graphic.attributes.CurrentPlus6Ft_Acres,
+									barriers: graphic.attributes.Barrier_Count,
+									wetlands: graphic.attributes.Non_Tidal_Wetland_Acres
+								});
+
+							}
 
 							self.map.setExtent(graphic.geometry.getExtent(), true);
 							return false;

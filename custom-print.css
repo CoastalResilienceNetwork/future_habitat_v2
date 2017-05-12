@@ -56,8 +56,12 @@ body[data-con-measures=false] .flex-container {
 	}
 	#custom-print-legend {
 	    position: absolute;
-    	left: 212mm;
-    	width: 62mm;
+	    left: 207mm;
+	    padding-left: 5mm;
+	    width: 62mm;
+	    height: 160mm;
+	    background-color: #fff;
+	    z-index: 100;
 	}
 	.layer-legends {
 		margin-top: 4mm;
@@ -107,8 +111,11 @@ body[data-con-measures=false] .flex-container {
 	#print-cons-measures {
 		position: absolute;
 	    padding-left: 6px;
-	    top: 170mm;
+	    padding-top: 3mm;
+	    top: 167mm;
 	    width: 202mm;
+	    background-color: #fff;
+	    z-index: 100;
 	}
 
 	body[data-con-measures=false] #print-cons-measures {
