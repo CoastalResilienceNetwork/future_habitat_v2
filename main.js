@@ -67,16 +67,16 @@ define([
 				this.render();
 
 				// Setup query handles
-				this.qtParcels = new QueryTask('http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/1');
+				this.qtParcels = new QueryTask('http://services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/1');
 				this.qParcels = new Query();
 				this.qParcels.returnGeometry = true;
 				this.qParcels.outFields = ['*'];
 
-				this.qtCrossings = new QueryTask('http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/0');
+				this.qtCrossings = new QueryTask('http://services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/0');
 				this.qCrossings = new Query();
 				this.qCrossings.returnGeometry = true;
 
-				this.qtRegions = new QueryTask('http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/8');
+				this.qtRegions = new QueryTask('http://services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/8');
 				this.qRegions = new Query();
 				this.qRegions.outFields = ['*'];
 				this.qRegions.returnGeometry = false;
