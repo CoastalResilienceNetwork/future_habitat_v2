@@ -288,7 +288,7 @@ define([
 				}
 
 				if (!this.layers.current_conservation_lands) {
-					this.layers.current_conservation_lands = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
+					this.layers.current_conservation_lands = new ArcGISDynamicMapServiceLayer("http://services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
 						visible: false
 					});
 					this.layers.current_conservation_lands.setVisibleLayers([8]);
@@ -296,7 +296,7 @@ define([
 				}
 				
 				if (!this.layers.wildlife_habitat) {
-					this.layers.wildlife_habitat = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
+					this.layers.wildlife_habitat = new ArcGISDynamicMapServiceLayer("http://services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
 						visible: false
 					});
 					this.layers.wildlife_habitat.setVisibleLayers([11]);
@@ -304,7 +304,7 @@ define([
 				}
 
 				if (!this.layers.non_tidal_wetlands) {
-					this.layers.non_tidal_wetlands = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
+					this.layers.non_tidal_wetlands = new ArcGISDynamicMapServiceLayer("http://services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
 						visible: false
 					});
 					this.layers.non_tidal_wetlands.setVisibleLayers([7]);
@@ -312,7 +312,7 @@ define([
 				}
 
 				if (!this.layers.marshHabitat) {
-					this.layers.marshHabitat = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
+					this.layers.marshHabitat = new ArcGISDynamicMapServiceLayer("http://services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
 						id: 'marshHabitat'
 					});
 					this.layers.marshHabitat.setVisibleLayers([2]);
@@ -338,7 +338,7 @@ define([
 
 				if (!this.layers.road_stream_crossing) {
 
-					this.layers.road_stream_crossing = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
+					this.layers.road_stream_crossing = new ArcGISDynamicMapServiceLayer("http://services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
 						visible: false
 					});
 					this.layers.road_stream_crossing.setVisibleLayers([0]);
@@ -363,7 +363,7 @@ define([
 
 
 					// We use snapshot mode because we need all the features locally for querying attributes
-					this.layers.regions = new FeatureLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/9", {
+					this.layers.regions = new FeatureLayer("http://services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/9", {
 						mode: FeatureLayer.MODE_SNAPSHOT,
 						outFields: ['*']
 					});
