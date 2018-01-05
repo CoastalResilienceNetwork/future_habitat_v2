@@ -18,6 +18,7 @@ define([
 	"esri/Color",
 	"esri/graphic",
     "dojo/dom",
+    'dojo/text!./region.json',
     "dojo/text!./print_template.html",
     "dojo/text!./template.html",
 	], function(declare,
@@ -39,6 +40,7 @@ define([
 		Color,
 		Graphic,
 		dom,
+		RegionConfig,
 		print_template,
 		template
 	) {
@@ -59,24 +61,21 @@ define([
 			initialize: function(frameworkParameters) {
 				declare.safeMixin(this, frameworkParameters);
 				this.$el = $(this.container);
-
-				// This hack removes a mismatch jquery-ui stylesheet.
-				// Hack needs to be removed when framework is upgraded
-				$('link[rel=stylesheet][href~="http://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css"]').remove();
+				this.regionConfig = $.parseJSON(RegionConfig);
 
 				this.render();
 
 				// Setup query handles
-				this.qtParcels = new QueryTask('http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/1');
+				this.qtParcels = new QueryTask(this.regionConfig.service + '/1');
 				this.qParcels = new Query();
 				this.qParcels.returnGeometry = true;
 				this.qParcels.outFields = ['*'];
 
-				this.qtCrossings = new QueryTask('http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/0');
+				this.qtCrossings = new QueryTask(this.regionConfig.service + '/0');
 				this.qCrossings = new Query();
 				this.qCrossings.returnGeometry = true;
 
-				this.qtRegions = new QueryTask('http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/8');
+				this.qtRegions = new QueryTask(this.regionConfig.service + '/8');
 				this.qRegions = new Query();
 				this.qRegions.outFields = ['*'];
 				this.qRegions.returnGeometry = false;
@@ -199,7 +198,7 @@ define([
 												self.finishloading.remove();
 												window.print();
 												TINY.box.hide();
-											})
+											});
 										} else {
 											window.print();
 											TINY.box.hide();
@@ -208,9 +207,9 @@ define([
 										// Default ESRI pan animation duration is 350.  May want to 
 										esriConfig.defaults.map.panRate = defaultPanRate;
 										esriConfig.defaults.map.panDuration = defaultPanDuration;
-									}, 850)
+									}, 850);
 
-								})
+								});
 								$('head').append(link);
 
 								$("#print-title-map").html($("#print-title").val());
@@ -238,7 +237,7 @@ define([
 				        	$("body").removeAttr('data-con-measures');
 			        		self.map.resize(true);
 		        			
-			        		$('#generate-print').off()
+			        		$('#generate-print').off();
 			        		if (self.finishloading) {
 			        			self.finishloading.remove();
 			        		}
@@ -280,15 +279,15 @@ define([
 				// NOTE Order added here is important because it is draw order on the map
 
 				if (!this.layers.lidar) {
-					this.layers.lidar = new WMSLayer("http://mapserver.maine.gov/wms/mapserv.exe?map=c:/wms/topos.map", {
+					this.layers.lidar = new WMSLayer(this.regionConfig.lidar, {
 						visible: false,
-						visibleLayers: ['medem2_hill','medem2_overview10_hill','medem2_overview30_hill','medem2_overview100_hill']
+						visibleLayers: this.regionConfig.lidarLayers
 					});
 					this.map.addLayer(this.layers.lidar);
 				}
 
 				if (!this.layers.current_conservation_lands) {
-					this.layers.current_conservation_lands = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
+					this.layers.current_conservation_lands = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
 					});
 					this.layers.current_conservation_lands.setVisibleLayers([8]);
@@ -296,7 +295,7 @@ define([
 				}
 				
 				if (!this.layers.wildlife_habitat) {
-					this.layers.wildlife_habitat = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
+					this.layers.wildlife_habitat = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
 					});
 					this.layers.wildlife_habitat.setVisibleLayers([11]);
@@ -304,7 +303,7 @@ define([
 				}
 
 				if (!this.layers.non_tidal_wetlands) {
-					this.layers.non_tidal_wetlands = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
+					this.layers.non_tidal_wetlands = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
 					});
 					this.layers.non_tidal_wetlands.setVisibleLayers([7]);
@@ -312,7 +311,7 @@ define([
 				}
 
 				if (!this.layers.marshHabitat) {
-					this.layers.marshHabitat = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
+					this.layers.marshHabitat = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						id: 'marshHabitat'
 					});
 					this.layers.marshHabitat.setVisibleLayers([2]);
@@ -323,7 +322,7 @@ define([
 				// I've "fixed" this bug by hiding the canvas layer in css before the minScale is reached
 				// If adjusting the scale, update the css
 				if (!this.layers.parcels) {
-					this.layers.parcels = new VectorTileLayer("http://tiles.arcgis.com/tiles/F7DSX1DSNSiWmOqh/arcgis/rest/services/Maine_Parcels_Coastal/VectorTileServer", {
+					this.layers.parcels = new VectorTileLayer(this.regionConfig.parcels, {
 						id: "mainMapParcelVector",
 						minScale: 36111.911040
 					});
@@ -338,7 +337,7 @@ define([
 
 				if (!this.layers.road_stream_crossing) {
 
-					this.layers.road_stream_crossing = new ArcGISDynamicMapServiceLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer", {
+					this.layers.road_stream_crossing = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
 					});
 					this.layers.road_stream_crossing.setVisibleLayers([0]);
@@ -363,7 +362,7 @@ define([
 
 
 					// We use snapshot mode because we need all the features locally for querying attributes
-					this.layers.regions = new FeatureLayer("http://dev.services.coastalresilience.org/arcgis/rest/services/Maine/Future_Habitat/MapServer/9", {
+					this.layers.regions = new FeatureLayer(this.regionConfig.service + '/9', {
 						mode: FeatureLayer.MODE_SNAPSHOT,
 						outFields: ['*']
 					});
