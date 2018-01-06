@@ -462,8 +462,8 @@ define([
 
 			render: function() {
 				var self = this;
-				this.$el.html(_.template(template, {
-
+				this.$el.html(_.template(template)({
+					regionLabel: this.regionConfig.regionLabel
                 }));
 
                 this.$el.find('#chosenRegion').chosen({
