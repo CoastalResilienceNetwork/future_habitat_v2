@@ -27,39 +27,21 @@
 
 /* Custom print dialog */
 
-#plugin-print-sandbox {
-    width: 100%;
-    height: 100%;
-}
-
-#print-page {
-	display: none;
-}
-
-#plugin-print-sandbox #plugin-print-preview-map {
-	width: calc(80% - 14px) !important;
-	height: calc(80% - 106px) !important;
-}
-
-
-#future-habitat-custom-print-form {
-	display: block;
-    font-weight: bold;
+#plugin-print-modal {
+	font-weight: bold;
     font-size: 17px;
-    margin-top: 8px;
-	padding: 10px;
 }
 
-#future-habitat-custom-print-form .lbl-text {
+#plugin-print-modal .lbl-text {
 	display: block;
 }
 
-#future-habitat-custom-print-form input[type="text"] {
+#plugin-print-modal input[type="text"] {
 	width: 100%;
 	margin-bottom: 7px;
 }
 
-#future-habitat-custom-print-form .form-component {
+#plugin-print-modal .form-component {
 	margin-top: 10px;
 }
 

@@ -1,168 +1,135 @@
+
+
+
 @media print {
 	@page { 
-	    size: landscape;
-		margin: 13mm 13mm 13mm 13mm;
+		/* 215.9 by 279.4 mm */
+		size: landscape;
+		margin: 0;
 	}
 
-	header {
-		display: none;
+	html, body {
+		height: 90%;
 	}
 
-	#plugin-print-sandbox {
-		width: 100%;
-		height: 100%;
+	#plugin-print-sandbox #map-0 {
+		display: block;
+	    position: absolute;
+	    top: 20mm;
+	    height: calc(100% - 48mm);
+	    width: calc(100% - 82mm); /* legend width plus margins */
+	    left: 10mm;
+	    overflow: hidden;
 	}
 
-	#print-page {
-		width: calc(100% - 6px);
-		height: calc(100% - 12px);
-	    page-break-after: always;
-	    border: 1px solid gray;
-	    padding: 5px;
+	body[data-con-measures=false] #plugin-print-sandbox #map-0 {
+		height: 183mm;
 	}
 
-	#map-print-sandbox {
-		display: none !important;
+	#plugin-print-sandbox #legend-container-0 {
+		display: block;
+	    position: absolute;
+	    top: 19mm;
+	    right: 10mm;
+	    padding-left: 10mm;
+	    width: 62mm !important;
+	    height: calc(100% - 48mm) !important;
+	    z-index: 100;
 	}
 
-	.sidebar-nav {
-		display: none !important;
-	}
 
-	/* Browsers don't print background images by default
-	   so this leaves an empty white box if we don't hide it */
-	#plugin-print-preview-map .logo-med {
-		display: none;
+	#print-page .header {
+	    width: calc(100% - 82mm); /* legend width plus margins */
+	    padding-top: 10mm;
+	    padding-left: 10mm;
+	    display: inline-block;
 	}
-
-	div.header {
-		float: left;
-	    width: 80%;
-	    height: 80px;
-		border: 2px solid gray;
-	    background-color: #fff;
-	}
-
-	#print-title-map {
-		font-size: 22px;
-		padding: 5px 1px 0px 10px;
-	}
-
-	#print-subtitle-map {
-		padding: 0px 0px 0px 10px;
-		font-size: 19px;
-	}
-
-	#custom-print-legend {
-	    float: right;
-	    width: calc(20% - 14px);
-	    height: calc(42% - 8px);
-		border: 2px solid gray;
-	}
-
-	#print-cons-measures .title,
-	#custom-print-legend .title {
-		font-size: 16px;
-		padding-left: 0.05in;
-	}
-
-	#custom-print-legend .legend-header {
-		display: none;
-	}
-
-	.layer-legends,
-	.legend-layer {
-		width: 100% !important;
-	}
-
-	#print-cons-measures {
-		border: 2px solid gray;
-		float: right;
-	    height: calc(58% - 4px);
-	    width: calc(20% - 14px);
-	    clear: right;
-	    margin-top: 6px;
+	#print-page #custom-print-footer {
+	    position: absolute;
+	    padding-left: 10mm;
+	    height: 9mm;
+	    bottom: 6mm;
+	    width: calc(100% - 82mm);
 	}
 
 	#print-cons-measures .stats {
-		background-color: #fff;
 		padding: 0;
+		background-color: #fff;
+		border-bottom: 0.5mm solid #b7b5b5;
+	}
+	#print-cons-measures .stats .stat.marsh {
+		width: 55mm;
+	}
+	#print-cons-measures .stats .stat.wetlands {
+		width: 68mm;
+	}
+	#print-cons-measures .stats .stat .icon img {
+		width: 20mm;
+		height: 20mm;
+	}
+	#print-cons-measures .stats .stat .stat-container,
+	#print-cons-measures .stats .stat .icon {
+		float: left;
 	}
 
-	#print-cons-measures .stats .stat {
-
+	#print-cons-measures .stats .stat .value {
+		font-size: 4.9mm;
+	    font-weight: bold;
+	}
+	#print-cons-measures .stats .stat .units {
+	    font-size: 4.2mm;
+	    font-weight: bold;
 	}
 
-	#print-cons-measures .stats .description {
-	 	position: inherit;
-		left: 5px;
-	 	font-size: 13px;
-	 	line-height: 20px;
-	 	display: inline-block;
-		white-space: pre-line;
-		width: 100%;
-		padding-top: 0 !important;
+	#print-cons-measures .stats .stat .stat-container {
+		padding-left: 2mm;
+    	padding-top: 4mm;
 	}
-
-	#print-cons-measures .stats .number {
+	#print-cons-measures {
 		position: absolute;
-	    display: block;
-	    line-height: 22px;
-	    font-size: 14px;
-	    left: 0;
-	    top: 26px;
+	    padding-left: 10mm;
+	    bottom: 17mm;
+	    width: calc(100% - 82mm); /* legend width plus margins */
+	    background-color: #fff;
+	    z-index: 100;
+	}
+
+	body[data-con-measures=false] #print-cons-measures {
+		display: none;
+	}
+
+	.legend-header {
+		font-weight: bold;
+		font-size: 3.5mm;
+	}
+	.custom-print-footer-content {
+		font-size: 2.5mm;
+	}
+	.esriScalebar {
+		height: 13mm;
+	}
+	.print-logo {
+		position: absolute;
+	    right: 10mm;
+	    bottom: 2mm;
+	}
+
+	/* Double check */
+
+	#print-title-map {
+		font-size: 5.8mm;
+	}
+
+	#print-subtitle-map {
+		font-size: 5mm;
+	}
+
+	#print-cons-measures .title,
+		font-size: 4.2mm;
 	}
 
 	#print-cons-measures .stats .stat-info {
 		display: none;
 	}
 
-
-	#print-cons-measures .stats .pill {
-	    background-color: #fff;
-	    color: #5d6165;
-	    height: auto;
-	    width: auto;
-	    border-radius: 0;
-	}
-
-	#custom-print-footer {
-		height: calc(20% - 6px);
-	    top: 80%;
-	    position: relative;
-	    width: 80%;
-		border: 2px solid gray;
-		padding-left: 6px;
-	}
-
-	#custom-print-footer .big-title {
-		position: absolute;
-		font-size: 22px;
-	}
-
-	#custom-print-footer .custom-print-footer-content {
-		position: absolute;
-		top: 27px;
-		font-size: 15px;
-	}
-
-	#plugin-print-preview-map {
-	    visibility: visible;
-	    position: absolute;
-	    top: 88px;
-	    border: 2px solid gray;
-	    left: 6px;
-	    width: calc(80% - 14px) !important;
-	    height: calc(80% - 106px) !important;
-	}
-
-	.print-logo {
-		position: absolute;
-	    right: 0.1in;
-	    bottom: 0.05in;
-	}
-
-	.dojoxResizeHandle {
-		display: none;
-	}
 }

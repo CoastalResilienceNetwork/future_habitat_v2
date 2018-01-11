@@ -19,6 +19,7 @@ define([
 	"esri/graphic",
     "dojo/dom",
     'dojo/text!./region.json',
+    'dojo/text!./print-setup.html',
     "dojo/text!./print_template.html",
     "dojo/text!./template.html",
 	], function(declare,
@@ -41,6 +42,7 @@ define([
 		Graphic,
 		dom,
 		RegionConfig,
+		print_setup,
 		print_template,
 		template
 	) {
@@ -54,6 +56,9 @@ define([
 			size: 'custom',
 			allowIdentifyWhenActive: false,
 			layers: {},
+			hasCustomPrint: true,
+			usePrintModal: true,
+			printModalSize: [390, 330],
 			defaultExtent: new Extent(-7959275, 5087981, -7338606, 5791202, new SpatialReference({wkid: 102100})),
 			selectedParcel: null,
 			marshScenarioIdx: null,
@@ -62,6 +67,7 @@ define([
 				declare.safeMixin(this, frameworkParameters);
 				this.$el = $(this.container);
 				this.regionConfig = $.parseJSON(RegionConfig);
+				$(this.printButton).hide();
 
 				this.render();
 
@@ -157,7 +163,9 @@ define([
 				});
 
 				this.$el.find('.export .print').on('click', function() {
-					TINY.box.show({
+					console.log(self.$el.parent('.sidebar').find('.plugin-print'))
+					self.$el.parent('.sidebar').find('.plugin-print').trigger('click');
+					/*TINY.box.show({
 				        animate: true,
 				        url: 'plugins/future-habitat-v2/print-setup.html',
 				        fixed: true,
@@ -246,7 +254,7 @@ define([
 			        	}
 
 				    });
-
+					*/
 				});
 
 				this.$el.find('.export .notes').on('click', function() {
@@ -259,6 +267,32 @@ define([
 				    });
 				});
 
+			},
+
+
+			prePrintModal: function (preModalDeferred, $printArea, mapObject, modalSandbox) {
+				console.log(preModalDeferred, $printArea, mapObject, modalSandbox);
+				modalSandbox.append(_.template(print_setup, {}));
+
+				$printArea.append(_.template(print_template, {}));
+				preModalDeferred.resolve();
+			},
+
+
+			postPrintModal: function(postModalDeferred, modalSandbox, mapObject) {
+				$("body").attr('data-con-measures', $('#print-cons').is(':checked'));
+				$("#print-title-map").html(modalSandbox.find("#print-title").val());
+				$("#print-subtitle-map").html(modalSandbox.find("#print-subtitle").val());
+				if ($("#print-subtitle").val().length === 0) {
+					$('.title-sep').hide();
+				}
+				$('#print-cons-measures .stat.marsh .value').html(this.$el.find(".current-salt-marsh .value").html());
+                $('#print-cons-measures .stat.wetlands .value').html(this.$el.find(".inland-wetlands .value").html());
+                $('#print-cons-measures .stat.barriers .value').html(this.$el.find(".roadcrossing-potential .value").html());
+
+				window.setTimeout(function() {
+                    postModalDeferred.resolve();
+                }, 100);
 			},
 
 			// TODO Set appropriate zoom levels for layers
