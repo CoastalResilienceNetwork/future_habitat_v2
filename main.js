@@ -270,7 +270,7 @@ define([
 			},
 
 
-			prePrintModal: function (preModalDeferred, $printArea, mapObject, modalSandbox) {
+			prePrintModal: function (preModalDeferred, $printArea, modalSandbox, mapObject) {
 				console.log(preModalDeferred, $printArea, mapObject, modalSandbox);
 				modalSandbox.append(_.template(print_setup, {}));
 
