@@ -59,7 +59,6 @@ define([
 			hasCustomPrint: true,
 			usePrintModal: true,
 			printModalSize: [390, 330],
-			defaultExtent: new Extent(-7959275, 5087981, -7338606, 5791202, new SpatialReference({wkid: 102100})),
 			selectedParcel: null,
 			marshScenarioIdx: null,
 
@@ -67,9 +66,15 @@ define([
 				declare.safeMixin(this, frameworkParameters);
 				this.$el = $(this.container);
 				this.regionConfig = $.parseJSON(RegionConfig);
+				this.defaultExtent = new Extent(
+					this.regionConfig.defaultExtent[0],
+					this.regionConfig.defaultExtent[1],
+					this.regionConfig.defaultExtent[2],
+					this.regionConfig.defaultExtent[3],
+					new SpatialReference({wkid: 102100})
+				);
+				this.region = this.regionConfig.globalRegion;
 				$(this.printButton).hide();
-
-				this.render();
 
 				// Setup query handles
 				this.qtParcels = new QueryTask(this.regionConfig.service + '/1');
@@ -81,10 +86,19 @@ define([
 				this.qCrossings = new Query();
 				this.qCrossings.returnGeometry = true;
 
+				/*
 				this.qtRegions = new QueryTask(this.regionConfig.service + '/8');
 				this.qRegions = new Query();
 				this.qRegions.outFields = ['*'];
 				this.qRegions.returnGeometry = false;
+				*/
+
+				var regionQuery = new Query();
+                var queryTask = new QueryTask(this.regionConfig.regionService);
+                regionQuery.where = '1=1';
+                regionQuery.returnGeometry = false;
+                regionQuery.outFields = ['*'];
+                queryTask.execute(regionQuery, _.bind(this.processRegionStats, this));
 
 				// Setup graphic styles
 				
@@ -123,6 +137,21 @@ define([
 				return this;
 			},
 
+			processRegionStats: function(data) {
+				var self = this;
+				var transformedData = {};
+				var globalStats = {};
+				$.each(data.features, function(idx, datum) {
+					transformedData[datum.attributes[self.regionConfig.regionAttributeLabel]] = datum.attributes;
+					$.each(Object.keys(datum.attributes), function(idx, key) {
+						globalStats[key] = globalStats[key] + datum.attributes[key] || datum.attributes[key];
+					});
+				});
+				this.stats = transformedData;
+				this.stats.global = globalStats;
+				this.render();
+			},
+
 			bindEvents: function() {
 				var self = this;
 				this.$el.find('.transparency-label').on('mousedown', function() {
@@ -159,6 +188,7 @@ define([
 				});
 
 				this.$el.find('#chosenRegion').on('change', function(e) {
+					self.region = e.target.value;
 					self.zoomToRegion(e.target.value);
 				});
 
@@ -175,18 +205,14 @@ define([
 				        height: 700
 				    });
 				});
-
 			},
 
-
 			prePrintModal: function (preModalDeferred, $printArea, modalSandbox, mapObject) {
-				console.log(preModalDeferred, $printArea, mapObject, modalSandbox);
 				modalSandbox.append(_.template(print_setup, {}));
 
 				$printArea.append(_.template(print_template, {}));
 				preModalDeferred.resolve();
 			},
-
 
 			postPrintModal: function(postModalDeferred, modalSandbox, mapObject) {
 				$("body").attr('data-con-measures', $('#print-cons').is(':checked'));
@@ -220,8 +246,7 @@ define([
 				}
 
 				// NOTE Order added here is important because it is draw order on the map
-
-				if (!this.layers.lidar) {
+				if (this.regionConfig.lidar && !this.layers.lidar) {
 					this.layers.lidar = new WMSLayer(this.regionConfig.lidar, {
 						visible: false,
 						visibleLayers: this.regionConfig.lidarLayers
@@ -229,7 +254,7 @@ define([
 					this.map.addLayer(this.layers.lidar);
 				}
 
-				if (!this.layers.current_conservation_lands) {
+				if (this.regionConfig.current_conservation_lands && !this.layers.current_conservation_lands) {
 					this.layers.current_conservation_lands = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
 					});
@@ -237,7 +262,7 @@ define([
 					this.map.addLayer(this.layers.current_conservation_lands);
 				}
 				
-				if (!this.layers.wildlife_habitat) {
+				if (this.regionConfig.wildlife_habitat && !this.layers.wildlife_habitat) {
 					this.layers.wildlife_habitat = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
 					});
@@ -245,7 +270,7 @@ define([
 					this.map.addLayer(this.layers.wildlife_habitat);
 				}
 
-				if (!this.layers.non_tidal_wetlands) {
+				if (this.regionConfig.non_tidal_wetlands && !this.layers.non_tidal_wetlands) {
 					this.layers.non_tidal_wetlands = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
 					});
@@ -253,18 +278,18 @@ define([
 					this.map.addLayer(this.layers.non_tidal_wetlands);
 				}
 
-				if (!this.layers.marshHabitat) {
+				if (this.regionConfig.service && !this.layers.marshHabitat) {
 					this.layers.marshHabitat = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						id: 'marshHabitat'
 					});
-					this.layers.marshHabitat.setVisibleLayers([2]);
+					this.layers.marshHabitat.setVisibleLayers([this.regionConfig.scenarios[0].layer]);
 					this.map.addLayer(this.layers.marshHabitat);
 				}
 
 				// NOTE There is an ESRI bug where some pixels render on the canvas before the minscale
 				// I've "fixed" this bug by hiding the canvas layer in css before the minScale is reached
 				// If adjusting the scale, update the css
-				if (!this.layers.parcels) {
+				if (this.regionConfig.parcels && !this.layers.parcels) {
 					this.layers.parcels = new VectorTileLayer(this.regionConfig.parcels, {
 						id: "mainMapParcelVector",
 						minScale: 36111.911040
@@ -278,7 +303,7 @@ define([
 					this.map.addLayer(this.layers.parcelGraphics);
 				}
 
-				if (!this.layers.road_stream_crossing) {
+				if (this.regionConfig.road_stream_crossing && !this.layers.road_stream_crossing) {
 
 					this.layers.road_stream_crossing = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
@@ -305,7 +330,7 @@ define([
 
 
 					// We use snapshot mode because we need all the features locally for querying attributes
-					this.layers.regions = new FeatureLayer(this.regionConfig.service + '/9', {
+					this.layers.regions = new FeatureLayer(this.regionConfig.regionService, {
 						mode: FeatureLayer.MODE_SNAPSHOT,
 						outFields: ['*']
 					});
@@ -333,28 +358,27 @@ define([
 
 					});
 
-
-
-
 					// TODO: Clean this up when deactivated
 					this.map.on('zoom-end', function(z) {
 						/*if (z.level >= 11) {
 							self.regionGraphics.clear();
 						}*/
 
-						if (z.level >= 13) {
-							self.$el.find('.parcel-label').show();
-							self.$el.find('#parcel-id').show();
-							self.$el.find('.hint').hide();
-						} else {
-							self.$el.find('.parcel-label').hide();
-							self.$el.find('#parcel-id').html('').hide();
-							self.$el.find('.hint').show();
-							self.layers.parcelGraphics.clear();
-							self.selectedParcel = null;
-							self.layers.crossingGraphics.clear();
-							$('.selected-barrier-lgnd').hide();
-							self.map.resize();
+						if (self.regionConfig.parcels) {
+							if (z.level >= 13) {
+								self.$el.find('.parcel-label').show();
+								self.$el.find('#parcel-id').show();
+								self.$el.find('.hint').hide();
+							} else {
+								self.$el.find('.parcel-label').hide();
+								self.$el.find('#parcel-id').html('').hide();
+								self.$el.find('.hint').show();
+								self.layers.parcelGraphics.clear();
+								self.selectedParcel = null;
+								self.layers.crossingGraphics.clear();
+								$('.selected-barrier-lgnd').hide();
+								self.map.resize();
+							}
 						}
 					});
 				}
@@ -362,7 +386,10 @@ define([
 				this.map.on('click', function(e) {
 					var zoom = self.map.getZoom();
 					if (zoom >= 14) {
-						self.getParcelByPoint(e.mapPoint);
+
+						if (this.regionConfig.parcels) {
+							self.getParcelByPoint(e.mapPoint);
+						}
 					}
 
 					/*if (zoom < 14 && zoom >= 11) {
@@ -405,8 +432,21 @@ define([
 
 			render: function() {
 				var self = this;
+				var saltMarshLabels = this.regionConfig.scenarios.map(function(scenario) {
+                	return scenario.label;
+                });
+
 				this.$el.html(_.template(template)({
-					regionLabel: this.regionConfig.regionLabel
+					regions: Object.keys(this.stats).sort(),
+					regionLabel: this.regionConfig.regionLabel,
+					globalRegion: this.regionConfig.globalRegion,
+					stats: this.regionConfig.stats,
+					lidar: this.regionConfig.lidar,
+					current_conservation_lands: this.regionConfig.current_conservation_lands,
+					wildlife_habitat: this.regionConfig.wildlife_habitat,
+					non_tidal_wetlands: this.regionConfig.non_tidal_wetlands,
+					marshHabitat: this.regionConfig.marshHabitat,
+					road_stream_crossing: this.regionConfig.road_stream_crossing
                 }));
 
                 this.$el.find('#chosenRegion').chosen({
@@ -414,17 +454,9 @@ define([
                 	width: '100%'
                 });
 
-                var saltMarshLabels = [
-                	'current',
-                	'1&nbsp;ft',
-                	'2&nbsp;ft',
-                	'3.3&nbsp;ft',
-                	'6&nbsp;ft'
-                ];
-
                 this.$el.find("#salt-marsh-slider").slider({
             		min: 0,
-            		max: 4,
+            		max: saltMarshLabels.length - 1,
             		range: false,
             		change: function(e, ui) {
 						self.$el.find('.salt-marsh-control').attr('data-scenario-idx', ui.value);
@@ -448,14 +480,13 @@ define([
 						control.find('.value').html(ui.value + '%');
 						self.layers[layer].setOpacity(ui.value / 100);
             		}
-				}).slider('float', {
-					//labels: saltMarshLabels
 				});
 
 				this.$el.find('.info').tooltip({
 
 				});
 
+				this.updateStatistics();
 				this.bindEvents();
 			},
 
@@ -465,37 +496,12 @@ define([
 				this.$el.find('.region-label').html(region);
 				this.layers.selectedRegionGraphics.clear();
 
-				if (region === 'Maine') {
+				if (region === this.regionConfig.globalRegion) {
 					// TODO When initially activated, the region layer isn't loaded, so stats are unavailable
 					this.map.setExtent(this.defaultExtent);
-
-					self.setMarshScenarioStats({
-						current: _.reduce(this.layers.regions.graphics, function(mem, graphic) {
-							return mem + graphic.attributes.Current_Tidal_Marsh_Acres;
-						}, 0),
-						ft1: _.reduce(this.layers.regions.graphics, function(mem, graphic) {
-							return mem + graphic.attributes.CurrentPlus1Ft_Acres;
-						}, 0),
-						ft2: _.reduce(this.layers.regions.graphics, function(mem, graphic) {
-							return mem + graphic.attributes.CurrentPlus2Ft_Acres;
-						}, 0),
-						ft33: _.reduce(this.layers.regions.graphics, function(mem, graphic) {
-							return mem + graphic.attributes.CurrentPlus3Ft_Acres;
-						}, 0),
-						ft6: _.reduce(this.layers.regions.graphics, function(mem, graphic) {
-							return mem + graphic.attributes.CurrentPlus6Ft_Acres;
-						}, 0),
-						barriers: _.reduce(this.layers.regions.graphics, function(mem, graphic) {
-							return mem + graphic.attributes.Barrier_Count;
-						}, 0),
-						wetlands: _.reduce(this.layers.regions.graphics, function(mem, graphic) {
-							return mem + graphic.attributes.Non_Tidal_Wetland_Acres;
-						}, 0),
-					});
-
 				} else {
 					_.each(this.layers.regions.graphics, function(graphic) {
-						if (graphic.attributes.NAME === region) {
+						if (graphic.attributes[self.regionConfig.regionAttributeLabel] === region) {
 
 							// TODO Select based off of current salt marsh scenario
 							// TODO Add commas as thousands selector
@@ -505,17 +511,6 @@ define([
 								self.layers.selectedRegionGraphics.add(highlightGraphic);
 
 								self.$el.find('.region-label').html(graphic.attributes.NAME);
-								
-								self.setMarshScenarioStats({
-									current: graphic.attributes.Current_Tidal_Marsh_Acres,
-									ft1: graphic.attributes.CurrentPlus1Ft_Acres,
-									ft2: graphic.attributes.CurrentPlus2Ft_Acres,
-									ft33: graphic.attributes.CurrentPlus3Ft_Acres,
-									ft6: graphic.attributes.CurrentPlus6Ft_Acres,
-									barriers: graphic.attributes.Barrier_Count,
-									wetlands: graphic.attributes.Non_Tidal_Wetland_Acres
-								});
-
 							}
 
 							self.map.setExtent(graphic.geometry.getExtent(), true);
@@ -525,77 +520,62 @@ define([
 
 				}
 
-				this.layers.parcelGraphics.clear();
-				self.selectedParcel = null;
-				this.layers.crossingGraphics.clear();
+				if (this.regionConfig.parcels) {
+					this.layers.parcelGraphics.clear();
+					this.selectedParcel = null;
+					this.layers.crossingGraphics.clear();
+				}
+				
 				$('.selected-barrier-lgnd').hide();
-				self.map.resize();
+				this.map.resize();
+				this.updateStatistics();
 			},
 
 			setMarshScenario: function(idx) {
 
 				this.$el.find('.salt-marsh-control').attr('data-scenario-idx', idx);
+				var layerIds = this.regionConfig.scenarios.map(function(scenario) {
+					return scenario.layer;
+				});
 
-				switch(parseInt(idx)) {
-					case 0:
-						this.layers.marshHabitat.setVisibleLayers([2]);
-						break;
-					case 1:
-						this.layers.marshHabitat.setVisibleLayers([2, 3]);
-						break;
-					case 2:
-						this.layers.marshHabitat.setVisibleLayers([2, 3, 4]);
-						break;
-					case 3:
-						this.layers.marshHabitat.setVisibleLayers([2, 3, 4, 5]);
-						break;
-					case 4:
-						this.layers.marshHabitat.setVisibleLayers([2, 3, 4, 5, 6]);
-						break;
-				}
-
+				this.layers.marshHabitat.setVisibleLayers(layerIds.slice(0, idx + 1));
+				
 				this.layers.marshHabitat.refresh();
 				this.updateStatistics();
 			},
 
-			setMarshScenarioStats: function(values) {
-				var control = this.$el.find('.salt-marsh-control');
-
-				control.attr('data-scenario-current', values.current);
-				control.attr('data-scenario-ft1', values.ft1);
-				control.attr('data-scenario-ft2', values.ft2);
-				control.attr('data-scenario-ft33', values.ft33);
-				control.attr('data-scenario-ft6', values.ft6);
-				control.attr('data-scenario-barriers', values.barriers);
-				control.attr('data-scenario-wetlands', values.wetlands);
-
-				this.updateStatistics();
-			},
-
 			updateStatistics: function() {
+				var self = this;
 				var control = this.$el.find('.salt-marsh-control');
 				var idx = control.attr('data-scenario-idx');
-				var saltMarshValue;
+
+				_.each(this.regionConfig.stats, function(stat) {
+					var statLabel = stat.label.toLowerCase().replace(/ /g, '-');
+					var regionStats;
+					if (self.region === self.regionConfig.globalRegion) {
+						regionStats = self.stats.global;
+					} else {
+						regionStats = self.stats[self.region];
+					}
+					var field = stat.fields[idx];
+					var value = regionStats[field];
+
+					if (parseFloat(value) > 100) {
+						value = self.addCommas(parseInt(value));
+					} else {
+						value = parseFloat(value).toFixed(1);
+					}
+
+					self.$el.find("[data-stat='" + statLabel + "']").find('.number .value').html(value);
+					return;
+				});
+				
+
+
 				var wetlandValue = control.attr('data-scenario-wetlands');
 
-				switch(parseInt(idx)) {
-					case 0:
-						saltMarshValue = control.attr('data-scenario-current');
-						break;
-					case 1:
-						saltMarshValue = control.attr('data-scenario-ft1');
-						break;
-					case 2:
-						saltMarshValue = control.attr('data-scenario-ft2');
-						break;
-					case 3:
-						saltMarshValue = control.attr('data-scenario-ft33');
-						break;
-					case 4:
-						saltMarshValue = control.attr('data-scenario-ft6');
-						break;
-				}
-
+				
+/*
 				if (parseFloat(saltMarshValue) > 100) {
 					saltMarshValue = parseInt(saltMarshValue);
 				} else {
@@ -611,6 +591,7 @@ define([
 				this.$el.find('.current-salt-marsh .number .value').html(this.addCommas(saltMarshValue));
 				this.$el.find('.inland-wetlands .number .value').html(this.addCommas(wetlandValue));
 				this.$el.find('.roadcrossing-potential .number .value').html(this.addCommas(control.attr('data-scenario-barriers')));
+			*/
 			},
 
 			getParcelByPoint: function(pt) {
@@ -625,15 +606,6 @@ define([
 						self.$el.find('#parcel-id').html(parcel.attributes.Parcel_Name);
 						self.$el.find('.region-label').html(parcel.attributes.Parcel_Name);
 
-						self.setMarshScenarioStats({
-							current: parcel.attributes.Current_Tidal_Marsh_Acres,
-							ft1: parcel.attributes.CurrentPlus1Ft_Acres,
-							ft2: parcel.attributes.CurrentPlus2Ft_Acres,
-							ft33: parcel.attributes.CurrentPlus3Ft_Acres,
-							ft6: parcel.attributes.CurrentPlus6Ft_Acres,
-							barriers: parcel.attributes.Barrier_Count_100m,
-							wetlands: parcel.attributes.Non_Tidal_Wetland_Acres
-						});
 						self.updateStatistics();
 
 						self.layers.selectedRegionGraphics.clear();

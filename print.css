@@ -89,7 +89,7 @@
 		position: absolute;
 	    padding-left: 10mm;
 	    bottom: 17mm;
-	    width: calc(100% - 82mm); /* legend width plus margins */
+	    width: calc(100% - 72mm); /* legend width plus margins */
 	    background-color: #fff;
 	    z-index: 100;
 	}

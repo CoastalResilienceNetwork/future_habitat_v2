@@ -193,6 +193,10 @@
 	background-color: #767676;
 }
 
+.ui-slider-label {
+	white-space: nowrap;
+}
+
 .main-controls .salt-marsh-control .transparency-control {
 	right: 30px;
 }
@@ -212,10 +216,6 @@
 	white-space: nowrap;
 	width: 100%;
 		margin-right: 8px;
-}
-
-.future-habitat .stats .stat:first-child .description {
-	padding-top: 18px;
 }
 
 .future-habitat .stats .stat .pill {
@@ -291,14 +291,38 @@
     background-size: 30px 30px;
 }
 
+.future-habitat .stats .icon.marsh {
+    background: url("icons/marsh.png") center no-repeat white;
+    background-size: 30px 30px;
+}
+
+.future-habitat .stats .icon.beach {
+    background: url("icons/beach.png") center no-repeat white;
+    background-size: 30px 30px;
+}
+
+.future-habitat .stats .icon.swamp {
+    background: url("icons/swamp.png") center no-repeat white;
+    background-size: 30px 30px;
+}
+
+.future-habitat .stats .icon.water {
+    background: url("icons/water.png") center no-repeat white;
+    background-size: 30px 30px;
+}
+
+.future-habitat .stats .icon.flats {
+    background: url("icons/flats.png") center no-repeat white;
+    background-size: 30px 30px;
+}
+
 .future-habitat .stats .description {
-    line-height: 24px;
+    line-height: 60px;
     font-size: 18px;
     position: absolute;
     left: 203px;
 	width: 151px;
     display: block;
-    padding-top: 6px;
 }
 
 .additional-layers .description {
