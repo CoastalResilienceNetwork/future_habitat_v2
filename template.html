@@ -14,21 +14,10 @@
 			<div class="chosen-wrap">
 				<select id="chosenRegion" class="chosen">
 					<option></option>
-					<option selected>Maine</option>
-					<option>Blue Hill Bay</option>
-					<option>Casco Bay</option>
-					<option>Cobscook - Passamaquoddy Bay</option>
-					<option>Downeast - Bold Coast</option>
-					<option>Englishman Bay - Machias Bay</option>
-					<option>Frenchman Bay</option>
-					<option>Kennebec/Androscoggin River</option>
-					<option>Muscongus Bay</option>
-					<option>Narraguagus Bay</option>
-					<option>Penobscot Bay</option>
-					<option>Saco Bay</option>
-					<option>Sheepscot Bay - Damariscotta River</option>
-					<option>South Coast</option>
-					<option>Wells Bay - Kennebunk River</option>
+					<option selected><%= globalRegion %></option>
+					<% _.each(regions, function(val, key) { if (val !== globalRegion) {%>
+	    				<option value="<%= val %>"><%= val %></option>
+	    			<% }}); %>
 				</select>
 			</div>
 		</div>
@@ -43,9 +32,9 @@
 
 	<div class="main-controls">
 
-		<h3>Conservation measures for <br><span class="region-label">Maine</span></h3>
+		<h3>Conservation measures for <br><span class="region-label"><%= globalRegion %></span></h3>
 
-		<div class="salt-marsh-control" data-scenario-idx="0" data-scenario-current="22371.7008" data-scenario-ft1="26799.73447" data-scenario-ft2="31742.08167" data-scenario-ft33="36201.71331" data-scenario-ft6="44494.32286" data-scenario-barriers="2198" data-scenario-wetlands="406231.696">
+		<div class="salt-marsh-control" data-scenario-idx="0">
 			<strong>Sea Level Rise Prediction</strong>
 			<div class="slider-container">
 				<div id="salt-marsh-slider" class="slider"></div>
@@ -63,6 +52,24 @@
 
 	<div class="stats">
 
+		<% _.each(stats, function(stat) { %>
+			<div class="stat active current-salt-marsh" data-stat="<%= stat.label.toLowerCase().replace(/ /g, '-') %>">
+				<div class="pill">
+					<div class="number">
+						<div class="icon <%= stat.icon %>"></div>
+						<span class="value"></span> <span class="units"><%= stat.units %></span>
+					</div>
+					<div class="description"><%= stat.label %></div>
+				</div>
+				<% if (stat.tooltip) { %>
+				<div class="stat-info">
+					<span class="fa fa-info-circle info" title="<%= stat.tooltip %>"></span>
+				</div>
+				<% } %>
+			</div>
+		<% }); %>
+
+<!--
 		<div class="stat active current-salt-marsh">
 			<div class="pill">
 				<div class="number">
@@ -101,7 +108,7 @@
 				<span class="fa fa-info-circle info" title="Displays surveyed road crossings that have been identified as potential stream barriers within 300 feet of selected parcels. (Check the Road-Stream Crossing Barriers box below to view this information.)"></span>
 			</div>
 		</div>
-
+-->
 	</div>
 
 	<div class="additional-layers">
@@ -109,11 +116,7 @@
 		<strong>Additional Layers:</strong>
 		<div class="description">Learn more about your area of interest by selecting from these additional information layers.</div>
 
-		
-
-		
-
-		
+		<% if (road_stream_crossing) { %>
 		<div class="layer">
 			<label class="form-component">
 				<input type="checkbox" data-layer="road_stream_crossing">
@@ -129,7 +132,9 @@
 				</div>
 			</div>
 		</div>
-
+		<% } %>
+		
+		<% if (non_tidal_wetlands) { %>
 		<div class="layer">
 			<label class="form-component">
 				<input type="checkbox" data-layer="non_tidal_wetlands">
@@ -145,8 +150,9 @@
 				</div>
 			</div>
 		</div>
+		<% } %>
 
-
+		<% if (wildlife_habitat) { %>
 		<div class="layer">
 			<label class="form-component">
 				<input type="checkbox" data-layer="wildlife_habitat">
@@ -162,7 +168,9 @@
 				</div>
 			</div>
 		</div>
+		<% } %>
 
+		<% if (current_conservation_lands) { %>
 		<div class="layer">
 			<label class="form-component">
 				<input type="checkbox" data-layer="current_conservation_lands">
@@ -179,7 +187,9 @@
 				</div>
 			</div>
 		</div>
+		<% } %>
 
+		<% if (lidar) { %>
 		<div class="layer">
 			<label class="form-component">
 				<input type="checkbox" data-layer="lidar">
@@ -196,6 +206,7 @@
 				</div>
 			</div>
 		</div>
+		<% } %>
 
 	</div>
 
