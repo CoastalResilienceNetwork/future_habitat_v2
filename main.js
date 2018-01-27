@@ -350,11 +350,11 @@ define([
 					});
 
 					this.layers.regions.on('click', function(e) {
-						if (e.graphic.attributes.NAME !== self.$el.find('#chosenRegion').val() && self.map.getZoom() < 14) {
-							self.zoomToRegion(e.graphic.attributes.NAME);
+						if (e.graphic.attributes[self.regionConfig.regionAttributeLabel] !== self.$el.find('#chosenRegion').val() && self.map.getZoom() < 14) {
+							self.zoomToRegion(e.graphic.attributes[self.regionConfig.regionAttributeLabel]);
 						}
 
-						self.$el.find('#chosenRegion').val(e.graphic.attributes.NAME).trigger("chosen:updated");
+						self.$el.find('#chosenRegion').val(e.graphic.attributes[self.regionConfig.regionAttributeLabel]).trigger("chosen:updated");
 
 					});
 
