@@ -538,7 +538,12 @@ define([
 					return scenario.layer;
 				});
 
-				this.layers.marshHabitat.setVisibleLayers(layerIds.slice(0, idx + 1));
+				if (this.regionConfig.scenariosAdditive) {
+					this.layers.marshHabitat.setVisibleLayers(layerIds.slice(0, idx + 1));
+				} else {
+					this.layers.marshHabitat.setVisibleLayers([layerIds[idx]]);
+				}
+				
 				
 				this.layers.marshHabitat.refresh();
 				this.updateStatistics();
