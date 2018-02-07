@@ -219,11 +219,14 @@
 }
 
 .future-habitat .stats .stat .pill {
+    display: flex;
+    flex-direction: row;
+    width: 365px;
+    height: 60px;
 	background-color: #36a7d8;
     color: #fff;
     border-radius: 30px;
-    height: 60px;
-    width: 365px;
+    align-items: center;
 }
 
 .future-habitat .stats .stat-info {
@@ -247,10 +250,9 @@
 }*/
 
 .future-habitat .stats .number {
-    position: absolute;
-    left: 13px;
-	line-height: 60px;
-	font-size: 17px;
+    flex: 0 0 190px;
+    margin-left: 10px;
+    font-size: 17px;
 }
 
 .future-habitat .stats .number .value {
@@ -317,12 +319,10 @@
 }
 
 .future-habitat .stats .description {
-    line-height: 60px;
     font-size: 18px;
-    position: absolute;
-    left: 203px;
-	width: 151px;
-    display: block;
+    flex-wrap: nowrap;
+    white-space: normal;
+    margin-right: 22px;
 }
 
 .additional-layers .description {
