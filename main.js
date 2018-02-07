@@ -258,7 +258,7 @@ define([
 					this.layers.current_conservation_lands = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
 					});
-					this.layers.current_conservation_lands.setVisibleLayers([8]);
+					this.layers.current_conservation_lands.setVisibleLayers([this.regionConfig.current_conservation_lands]);
 					this.map.addLayer(this.layers.current_conservation_lands);
 				}
 				
