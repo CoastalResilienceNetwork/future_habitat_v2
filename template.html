@@ -15,7 +15,7 @@
 				<select id="chosenRegion" class="chosen">
 					<option></option>
 					<option selected><%= globalRegion %></option>
-					<% _.each(regions, function(val, key) { if (val !== globalRegion) {%>
+					<% _.each(regions, function(val, key) { if (val !== "global") {%>
 	    				<option value="<%= val %>"><%= val %></option>
 	    			<% }}); %>
 				</select>
