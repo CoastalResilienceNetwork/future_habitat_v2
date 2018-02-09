@@ -23,9 +23,13 @@
 		</div>
 
 		<div class="right-side">
+			<% if (disclaimer) { %>
+			<span style="font-size: 11px;"><%= disclaimer %></span>
+			<% } else { %>
 			<div class="hint" style="display: none;">** Please zoom in to view parcel-level information</div>
 			<div class="parcel-label" style="display: none;">Parcel: <br>
 			<span id="parcel-id"></span></div>
+			<% } %>
 		</div>
 
 	</div>

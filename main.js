@@ -437,6 +437,7 @@ define([
                 });
 
 				this.$el.html(_.template(template)({
+					disclaimer: this.regionConfig.disclaimer,
 					regions: Object.keys(this.stats).sort(),
 					regionLabel: this.regionConfig.regionLabel,
 					globalRegion: this.regionConfig.globalRegion,
