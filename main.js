@@ -18,6 +18,7 @@ define([
 	"esri/Color",
 	"esri/graphic",
     "dojo/dom",
+    './State',
     'dojo/text!./region.json',
     'dojo/text!./print-setup.html',
     "dojo/text!./print_template.html",
@@ -41,6 +42,7 @@ define([
 		Color,
 		Graphic,
 		dom,
+		State,
 		RegionConfig,
 		print_setup,
 		print_template,
@@ -64,6 +66,7 @@ define([
 
 			initialize: function(frameworkParameters) {
 				declare.safeMixin(this, frameworkParameters);
+				this.state = new State({});
 				this.$el = $(this.container);
 				this.regionConfig = $.parseJSON(RegionConfig);
 				this.defaultExtent = new Extent(
@@ -73,7 +76,7 @@ define([
 					this.regionConfig.defaultExtent[3],
 					new SpatialReference({wkid: 102100})
 				);
-				this.region = this.regionConfig.globalRegion;
+				this.region = this.state.getRegion() || this.regionConfig.globalRegion;
 				$(this.printButton).hide();
 
 				// Setup query handles
@@ -189,6 +192,7 @@ define([
 
 				this.$el.find('#chosenRegion').on('change', function(e) {
 					self.region = e.target.value;
+					self.state = self.state.setRegion(self.region);
 					self.zoomToRegion(e.target.value);
 				});
 
@@ -416,7 +420,10 @@ define([
 			},
 
 			deactivate: function() {
+				
+			},
 
+			hibernate: function() {
 				_.each(Object.keys(this.layers), function(layer) {
 					this.map.removeLayer(this.layers[layer]);
 				}, this);
@@ -424,10 +431,6 @@ define([
 				// TODO: Cleanup map click events
 
 				this.layers = {};
-			},
-
-			hibernate: function() {
-
 			},
 
 			render: function() {
@@ -438,6 +441,7 @@ define([
 
 				this.$el.html(_.template(template)({
 					disclaimer: this.regionConfig.disclaimer,
+					intro: this.regionConfig.intro,
 					regions: Object.keys(this.stats).sort(),
 					regionLabel: this.regionConfig.regionLabel,
 					globalRegion: this.regionConfig.globalRegion,
@@ -599,6 +603,17 @@ define([
 				this.$el.find('.roadcrossing-potential .number .value').html(this.addCommas(control.attr('data-scenario-barriers')));
 			*/
 			},
+
+			setState: function(data) {
+				console.log(data);
+				this.state = new State(data);
+			},
+
+            getState: function() {
+                return {
+                    region: this.state.getRegion(),
+                };
+            },
 
 			getParcelByPoint: function(pt) {
 				var self = this;

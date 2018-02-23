@@ -36,7 +36,12 @@
 
 	<div class="main-controls">
 
-		<h3>Conservation measures for <br><span class="region-label"><%= globalRegion %></span></h3>
+		<h3><% if (intro) { %>
+			<%= intro %>
+		<% } else { %>
+			Conservation measures for
+		<% } %>
+		<span class="region-label"><%= globalRegion %></span></h3>
 
 		<div class="salt-marsh-control" data-scenario-idx="0">
 			<strong>Sea Level Rise Prediction</strong>
