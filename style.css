@@ -111,6 +111,12 @@
 	font-size: 13px;
 }
 
+.main-controls .ui-slider-pips .ui-slider-pip-label .ui-slider-label {
+	width: auto;
+	margin-left: -23px;
+	white-space: pre;
+}
+
 .main-controls .salt-marsh-control .slider-container {
 	display: inline-block;
 	width: 290px;
