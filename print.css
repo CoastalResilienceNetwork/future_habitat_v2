@@ -12,6 +12,17 @@
 		height: 90%;
 	}
 
+	/* Hide view more link in legend */
+	.legend-layer .item.expand,
+	.legend-layer .item.extra.collapse {
+		display: none !important;
+	}
+
+	/* Expand collapsed legend items */
+	.legend-layer .extra {
+	    display: block !important;
+	}
+
 	#plugin-print-sandbox #map-0 {
 		display: block;
 	    position: absolute;
@@ -56,6 +67,7 @@
 		padding: 0;
 		background-color: #fff;
 		border-bottom: 0.5mm solid #b7b5b5;
+		flex-wrap: nowrap;
 	}
 	#print-cons-measures .stats .stat.marsh {
 		width: 55mm;
@@ -89,7 +101,6 @@
 		position: absolute;
 	    padding-left: 10mm;
 	    bottom: 17mm;
-	    width: calc(100% - 72mm); /* legend width plus margins */
 	    background-color: #fff;
 	    z-index: 100;
 	}

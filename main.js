@@ -22,6 +22,7 @@ define([
     'dojo/text!./region.json',
     'dojo/text!./print-setup.html',
     "dojo/text!./print_template.html",
+    "dojo/text!./print_stat_template.html",
     "dojo/text!./template.html",
 	], function(declare,
 		PluginBase,
@@ -46,6 +47,7 @@ define([
 		RegionConfig,
 		print_setup,
 		print_template,
+		print_stat_template,
 		template
 	) {
 
@@ -213,8 +215,10 @@ define([
 
 			prePrintModal: function (preModalDeferred, $printArea, modalSandbox, mapObject) {
 				modalSandbox.append(_.template(print_setup, {}));
-
-				$printArea.append(_.template(print_template, {}));
+				$printArea.append(_.template(print_template)({
+					printFooterTitle: this.regionConfig.printFooterTitle,
+					printFooterBody: this.regionConfig.printFooterBody
+				}));
 				preModalDeferred.resolve();
 			},
 
@@ -225,10 +229,35 @@ define([
 				if ($("#print-subtitle").val().length === 0) {
 					$('.title-sep').hide();
 				}
-				$('#print-cons-measures .stat.marsh .value').html(this.$el.find(".current-salt-marsh .value").html());
+
+				_.each(this.regionConfig.stats, function(stat) {
+					var icon = stat.icon;
+					var label = stat.label;
+					var units = stat.units;
+					var acres = stat.acres;
+					var statLabel = label.toLowerCase().replace(/ /g, '-').replace(/\//g, '-');
+					var statValue = $('[data-stat=' + statLabel + '] .value').html();
+					var template = _.template(print_stat_template)({
+						icon: icon,
+						label: label,
+						units: units,
+						acres: acres,
+						stat: statValue
+					});
+					$("#print-cons-measures .stats").append(template);
+
+				});
+
+				$('.legend-layer').addClass('show-extras');
+
+
+
+
+
+				/*$('#print-cons-measures .stat.marsh .value').html(this.$el.find(".current-salt-marsh .value").html());
                 $('#print-cons-measures .stat.wetlands .value').html(this.$el.find(".inland-wetlands .value").html());
                 $('#print-cons-measures .stat.barriers .value').html(this.$el.find(".roadcrossing-potential .value").html());
-
+*/
 				window.setTimeout(function() {
                     postModalDeferred.resolve();
                 }, 100);
@@ -560,7 +589,7 @@ define([
 				var idx = control.attr('data-scenario-idx');
 
 				_.each(this.regionConfig.stats, function(stat) {
-					var statLabel = stat.label.toLowerCase().replace(/ /g, '-');
+					var statLabel = stat.label.toLowerCase().replace(/ /g, '-').replace(/\//g, '-');;
 					var regionStats;
 					if (self.region === self.regionConfig.globalRegion) {
 						regionStats = self.stats.global;
