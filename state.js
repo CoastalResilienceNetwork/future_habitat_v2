@@ -1,31 +1,45 @@
 'use strict';
 define([
         'dojo/_base/declare',
-        'underscore'
+        'underscore',
+        'dojo/text!./region.json'
     ],
-    function(declare, _) {
+    function(declare, _, RegionConfig) {
 
         var State = declare(null, {
             constructor: function(data) {
+                this.regionConfig = $.parseJSON(RegionConfig);
                 this.savedState = _.defaults({}, data, {
-                    region: data.region,
+                    region: this.regionConfig.globalRegion,
+                    slrIdx: 0
                 });
             },
 
             getState: function() {
+                console.log(this.savedState)
                 return this.savedState;
             },
 
             setRegion: function(region) {
-                console.log('setting region', region)
                 return this.clone({
                     region: region
                 });
             },
 
             getRegion: function() {
-                console.log(this.savedState)
                 return this.savedState.region;
+            },
+
+            setSLRIdx: function(slrIdx) {
+
+                console.log('setting slr', slrIdx)
+                return this.clone({
+                    slrIdx: slrIdx
+                });
+            },
+
+            getSLRIdx: function() {
+                return this.savedState.slrIdx;
             },
 
             // Return new State combined with `data`.

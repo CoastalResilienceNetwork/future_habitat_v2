@@ -71,6 +71,7 @@ define([
 				this.state = new State({});
 				this.$el = $(this.container);
 				this.regionConfig = $.parseJSON(RegionConfig);
+				this.slrIdx = 0; // Scenario array index
 				this.defaultExtent = new Extent(
 					this.regionConfig.defaultExtent[0],
 					this.regionConfig.defaultExtent[1],
@@ -78,7 +79,7 @@ define([
 					this.regionConfig.defaultExtent[3],
 					new SpatialReference({wkid: 102100})
 				);
-				this.region = this.state.getRegion() || this.regionConfig.globalRegion;
+				this.region = this.state.getRegion();
 				$(this.printButton).hide();
 
 				// Setup query handles
@@ -275,7 +276,11 @@ define([
 
 					// TODO Use zoomtoregion function, but need to make sure data is loaded first
 					// TODO Don't hard code initial values
-					this.map.setExtent(this.defaultExtent);
+					// Interferes with the save and share extent functionality.  Disable for now.  Will use the
+					// frameworks default extent
+					if (this.region === this.globalRegion) {
+						this.map.setExtent(this.defaultExtent);
+					}
 				}
 
 				// NOTE Order added here is important because it is draw order on the map
@@ -391,6 +396,10 @@ define([
 
 					});
 
+					// Set marsh scenario.  Will default to 0 unless and share was used to initalize different values
+					this.setMarshScenario(this.slrIdx);
+					this.$el.find("#salt-marsh-slider").slider("value", this.slrIdx);
+
 					// TODO: Clean this up when deactivated
 					this.map.on('zoom-end', function(z) {
 						/*if (z.level >= 11) {
@@ -473,6 +482,7 @@ define([
 					intro: this.regionConfig.intro,
 					regions: Object.keys(this.stats).sort(),
 					regionLabel: this.regionConfig.regionLabel,
+					region: this.region,
 					globalRegion: this.regionConfig.globalRegion,
 					stats: this.regionConfig.stats,
 					lidar: this.regionConfig.lidar,
@@ -528,8 +538,10 @@ define([
 				var self = this;
 
 				this.$el.find('.region-label').html(region);
-				this.layers.selectedRegionGraphics.clear();
-
+				if (this.layers.selectedRegionGraphics) {
+					this.layers.selectedRegionGraphics.clear();	
+				}
+				
 				if (region === this.regionConfig.globalRegion) {
 					// TODO When initially activated, the region layer isn't loaded, so stats are unavailable
 					this.map.setExtent(this.defaultExtent);
@@ -566,7 +578,8 @@ define([
 			},
 
 			setMarshScenario: function(idx) {
-
+				this.idx = idx;
+				this.state = this.state.setSLRIdx(idx);
 				this.$el.find('.salt-marsh-control').attr('data-scenario-idx', idx);
 				var layerIds = this.regionConfig.scenarios.map(function(scenario) {
 					return scenario.layer;
@@ -589,7 +602,7 @@ define([
 				var idx = control.attr('data-scenario-idx');
 
 				_.each(this.regionConfig.stats, function(stat) {
-					var statLabel = stat.label.toLowerCase().replace(/ /g, '-').replace(/\//g, '-');;
+					var statLabel = stat.label.toLowerCase().replace(/ /g, '-').replace(/\//g, '-');
 					var regionStats;
 					if (self.region === self.regionConfig.globalRegion) {
 						regionStats = self.stats.global;
@@ -606,41 +619,20 @@ define([
 					}
 
 					self.$el.find("[data-stat='" + statLabel + "']").find('.number .value').html(value);
-					return;
 				});
-				
-
-
-				var wetlandValue = control.attr('data-scenario-wetlands');
-
-				
-/*
-				if (parseFloat(saltMarshValue) > 100) {
-					saltMarshValue = parseInt(saltMarshValue);
-				} else {
-					saltMarshValue = parseFloat(saltMarshValue).toFixed(1);
-				}
-
-				if (parseFloat(wetlandValue) > 100) {
-					wetlandValue = parseInt(wetlandValue);
-				} else {
-					wetlandValue = parseFloat(wetlandValue).toFixed(1);
-				}
-
-				this.$el.find('.current-salt-marsh .number .value').html(this.addCommas(saltMarshValue));
-				this.$el.find('.inland-wetlands .number .value').html(this.addCommas(wetlandValue));
-				this.$el.find('.roadcrossing-potential .number .value').html(this.addCommas(control.attr('data-scenario-barriers')));
-			*/
 			},
 
 			setState: function(data) {
-				console.log(data);
 				this.state = new State(data);
+				this.region = data.region;
+				this.slrIdx = data.slrIdx;
+				this.$el.find('#chosenRegion').val(data.region).trigger("chosen:updated");
 			},
 
-            getState: function() {
+            getState: function(data) {
                 return {
-                    region: this.state.getRegion(),
+                	slrIdx: this.state.getSLRIdx(),
+                    region: this.state.getRegion()
                 };
             },
 
