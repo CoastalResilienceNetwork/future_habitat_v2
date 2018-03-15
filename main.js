@@ -280,7 +280,7 @@ define([
 				}
 
 				// NOTE Order added here is important because it is draw order on the map
-				if (parseInt(this.regionConfig.lidar) && !this.layers.lidar) {
+				if (this.regionConfig.lidar && !this.layers.lidar) {
 					this.layers.lidar = new WMSLayer(this.regionConfig.lidar, {
 						visible: false,
 						visibleLayers: this.regionConfig.lidarLayers
@@ -485,7 +485,6 @@ define([
 					current_conservation_lands: this.regionConfig.current_conservation_lands,
 					wildlife_habitat: this.regionConfig.wildlife_habitat,
 					non_tidal_wetlands: this.regionConfig.non_tidal_wetlands,
-					marshHabitat: this.regionConfig.marshHabitat,
 					road_stream_crossing: this.regionConfig.road_stream_crossing
                 }));
 
