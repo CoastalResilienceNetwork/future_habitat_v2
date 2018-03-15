@@ -7,49 +7,13 @@
 	<div id="print-cons-measures">
 		<div class="title">Conservation Measures</div>
 		<div class="stats">
-			<div class="stat marsh">
-				<div class="icon">
-					<img src="plugins/future-habitat-v2/icons/grass.png">
-				</div>
-				<div class="stat-container">
-					<div class="description">Tidal Marsh Area</div>
-					<div>
-						<span class="value"></span> <span class="units">acres</span>
-					</div>
-				</div>
-			</div>
-
-			<div class="stat wetlands">
-				<div class="icon">
-					<img src="plugins/future-habitat-v2/icons/bird.png">
-				</div>
-				<div class="stat-container">
-					<div class="description">Non-Tidal Wetlands Area</div>
-					<div>
-						<span class="value"></span> <span class="units">acres</span>
-					</div>
-				</div>
-			</div>
-
-
-			<div class="stat barriers">
-				<div class="icon">
-					<img src="plugins/future-habitat-v2/icons/fish.png">
-				</div>
-				<div class="stat-container">
-					<div class="description">Road Crossing Barriers Nearby</div>
-					<div>
-						<span class="value"></span>
-					</div>
-				</div>
-			</div>
 		</div>
 	</div>
 
 	<div id="custom-print-footer">
-		<div class="big-title">Coastal Resilience - Maine Future Habitat Mapping Tool</div>
+		<div class="big-title"><%= printFooterTitle %></div>
 		<div class="custom-print-footer-content">
-			Tidal Marsh Data: Maine Natural Areas Program (MNAP) - SLR Projections: Main Geological Survey, MNAP - Application Development: The Nature Conservancy
+			<%= printFooterBody %>
 		</div>
 	</div>
 	<div class="print-logo">

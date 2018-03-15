@@ -22,6 +22,7 @@ define([
     'dojo/text!./region.json',
     'dojo/text!./print-setup.html',
     "dojo/text!./print_template.html",
+    "dojo/text!./print_stat_template.html",
     "dojo/text!./template.html",
 	], function(declare,
 		PluginBase,
@@ -46,6 +47,7 @@ define([
 		RegionConfig,
 		print_setup,
 		print_template,
+		print_stat_template,
 		template
 	) {
 
@@ -69,6 +71,7 @@ define([
 				this.state = new State({});
 				this.$el = $(this.container);
 				this.regionConfig = $.parseJSON(RegionConfig);
+				this.slrIdx = 0; // Scenario array index
 				this.defaultExtent = new Extent(
 					this.regionConfig.defaultExtent[0],
 					this.regionConfig.defaultExtent[1],
@@ -76,28 +79,32 @@ define([
 					this.regionConfig.defaultExtent[3],
 					new SpatialReference({wkid: 102100})
 				);
-				this.region = this.state.getRegion() || this.regionConfig.globalRegion;
+				this.region = this.state.getRegion();
 				$(this.printButton).hide();
 
 				// Setup query handles
-				this.qtParcels = new QueryTask(this.regionConfig.service + '/1');
-				this.qParcels = new Query();
-				this.qParcels.returnGeometry = true;
-				this.qParcels.outFields = ['*'];
+				if (parseInt(this.regionConfig.parcelsLayer)) {
+					this.qtParcels = new QueryTask(this.regionConfig.service + '/' + this.regionConfig.parcelsLayer);
+					this.qParcels = new Query();
+					this.qParcels.returnGeometry = true;
+					this.qParcels.outFields = ['*'];
+				}
+				
+				if (parseInt(this.regionConfig.road_stream_crossing)) {
+					this.qtCrossings = new QueryTask(this.regionConfig.service + '/' + this.regionConfig.road_stream_crossing);
+					this.qCrossings = new Query();
+					this.qCrossings.returnGeometry = true;
+				}
 
-				this.qtCrossings = new QueryTask(this.regionConfig.service + '/0');
-				this.qCrossings = new Query();
-				this.qCrossings.returnGeometry = true;
-
-				/*
-				this.qtRegions = new QueryTask(this.regionConfig.service + '/8');
-				this.qRegions = new Query();
-				this.qRegions.outFields = ['*'];
-				this.qRegions.returnGeometry = false;
-				*/
+				/*if (parseInt(this.regionConfig.regionLayer))  {
+					this.qtRegions = new QueryTask(this.regionConfig.service + '/' + this.regionConfig.regionLayer);
+					this.qRegions = new Query();
+					this.qRegions.outFields = ['*'];
+					this.qRegions.returnGeometry = false;
+				}*/
 
 				var regionQuery = new Query();
-                var queryTask = new QueryTask(this.regionConfig.regionService);
+                var queryTask = new QueryTask(this.regionConfig.service + '/' + this.regionConfig.regionLayer);
                 regionQuery.where = '1=1';
                 regionQuery.returnGeometry = false;
                 regionQuery.outFields = ['*'];
@@ -213,8 +220,10 @@ define([
 
 			prePrintModal: function (preModalDeferred, $printArea, modalSandbox, mapObject) {
 				modalSandbox.append(_.template(print_setup, {}));
-
-				$printArea.append(_.template(print_template, {}));
+				$printArea.append(_.template(print_template)({
+					printFooterTitle: this.regionConfig.printFooterTitle,
+					printFooterBody: this.regionConfig.printFooterBody
+				}));
 				preModalDeferred.resolve();
 			},
 
@@ -225,9 +234,26 @@ define([
 				if ($("#print-subtitle").val().length === 0) {
 					$('.title-sep').hide();
 				}
-				$('#print-cons-measures .stat.marsh .value').html(this.$el.find(".current-salt-marsh .value").html());
-                $('#print-cons-measures .stat.wetlands .value').html(this.$el.find(".inland-wetlands .value").html());
-                $('#print-cons-measures .stat.barriers .value').html(this.$el.find(".roadcrossing-potential .value").html());
+
+				_.each(this.regionConfig.stats, function(stat) {
+					var icon = stat.icon;
+					var label = stat.label;
+					var units = stat.units;
+					var acres = stat.acres;
+					var statLabel = label.toLowerCase().replace(/ /g, '-').replace(/\//g, '-');
+					var statValue = $('[data-stat=' + statLabel + '] .value').html();
+					var template = _.template(print_stat_template)({
+						icon: icon,
+						label: label,
+						units: units,
+						acres: acres,
+						stat: statValue
+					});
+					$("#print-cons-measures .stats").append(template);
+
+				});
+
+				$('.legend-layer').addClass('show-extras');
 
 				window.setTimeout(function() {
                     postModalDeferred.resolve();
@@ -246,7 +272,11 @@ define([
 
 					// TODO Use zoomtoregion function, but need to make sure data is loaded first
 					// TODO Don't hard code initial values
-					this.map.setExtent(this.defaultExtent);
+					// Interferes with the save and share extent functionality.  Disable for now.  Will use the
+					// frameworks default extent
+					if (this.region === this.globalRegion) {
+						this.map.setExtent(this.defaultExtent);
+					}
 				}
 
 				// NOTE Order added here is important because it is draw order on the map
@@ -258,7 +288,7 @@ define([
 					this.map.addLayer(this.layers.lidar);
 				}
 
-				if (this.regionConfig.current_conservation_lands && !this.layers.current_conservation_lands) {
+				if (parseInt(this.regionConfig.current_conservation_lands) && !this.layers.current_conservation_lands) {
 					this.layers.current_conservation_lands = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
 					});
@@ -266,19 +296,19 @@ define([
 					this.map.addLayer(this.layers.current_conservation_lands);
 				}
 				
-				if (this.regionConfig.wildlife_habitat && !this.layers.wildlife_habitat) {
+				if (parseInt(this.regionConfig.wildlife_habitat) && !this.layers.wildlife_habitat) {
 					this.layers.wildlife_habitat = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
 					});
-					this.layers.wildlife_habitat.setVisibleLayers([11]);
+					this.layers.wildlife_habitat.setVisibleLayers([this.regionConfig.wildlife_Habitat]);
 					this.map.addLayer(this.layers.wildlife_habitat);
 				}
 
-				if (this.regionConfig.non_tidal_wetlands && !this.layers.non_tidal_wetlands) {
+				if (parseInt(this.regionConfig.non_tidal_wetlands) && !this.layers.non_tidal_wetlands) {
 					this.layers.non_tidal_wetlands = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
 					});
-					this.layers.non_tidal_wetlands.setVisibleLayers([7]);
+					this.layers.non_tidal_wetlands.setVisibleLayers([this.regionConfig.non_tidal_wetlands]);
 					this.map.addLayer(this.layers.non_tidal_wetlands);
 				}
 
@@ -293,7 +323,7 @@ define([
 				// NOTE There is an ESRI bug where some pixels render on the canvas before the minscale
 				// I've "fixed" this bug by hiding the canvas layer in css before the minScale is reached
 				// If adjusting the scale, update the css
-				if (this.regionConfig.parcels && !this.layers.parcels) {
+				if (parseInt(this.regionConfig.parcels) && !this.layers.parcels) {
 					this.layers.parcels = new VectorTileLayer(this.regionConfig.parcels, {
 						id: "mainMapParcelVector",
 						minScale: 36111.911040
@@ -307,7 +337,7 @@ define([
 					this.map.addLayer(this.layers.parcelGraphics);
 				}
 
-				if (this.regionConfig.road_stream_crossing && !this.layers.road_stream_crossing) {
+				if (parseInt(this.regionConfig.road_stream_crossing) && !this.layers.road_stream_crossing) {
 
 					this.layers.road_stream_crossing = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
@@ -331,7 +361,6 @@ define([
 						maxScale: 36111.911040
 					});
 					this.map.addLayer(this.layers.regionGraphics);
-
 
 					// We use snapshot mode because we need all the features locally for querying attributes
 					this.layers.regions = new FeatureLayer(this.regionConfig.regionService, {
@@ -362,13 +391,17 @@ define([
 
 					});
 
+					// Set marsh scenario.  Will default to 0 unless and share was used to initalize different values
+					this.setMarshScenario(this.slrIdx);
+					this.$el.find("#salt-marsh-slider").slider("value", this.slrIdx);
+
 					// TODO: Clean this up when deactivated
 					this.map.on('zoom-end', function(z) {
 						/*if (z.level >= 11) {
 							self.regionGraphics.clear();
 						}*/
 
-						if (self.regionConfig.parcels) {
+						if (parseInt(self.regionConfig.parcelsLayer)) {
 							if (z.level >= 13) {
 								self.$el.find('.parcel-label').show();
 								self.$el.find('#parcel-id').show();
@@ -391,12 +424,12 @@ define([
 					var zoom = self.map.getZoom();
 					if (zoom >= 14) {
 
-						if (this.regionConfig.parcels) {
+						if (this.regionConfig.parcelsLayer) {
 							self.getParcelByPoint(e.mapPoint);
 						}
 					}
 
-					/*if (zoom < 14 && zoom >= 11) {
+					/*if (this.regionConfig.parcelsLayer && zoom < 14 && zoom >= 11) {
 						self.qRegions.geometry = e.mapPoint;
 						self.qtRegions.execute(self.qRegions, function(results) {
 							if (results.features.length) {
@@ -444,13 +477,13 @@ define([
 					intro: this.regionConfig.intro,
 					regions: Object.keys(this.stats).sort(),
 					regionLabel: this.regionConfig.regionLabel,
+					region: this.region,
 					globalRegion: this.regionConfig.globalRegion,
 					stats: this.regionConfig.stats,
 					lidar: this.regionConfig.lidar,
 					current_conservation_lands: this.regionConfig.current_conservation_lands,
 					wildlife_habitat: this.regionConfig.wildlife_habitat,
 					non_tidal_wetlands: this.regionConfig.non_tidal_wetlands,
-					marshHabitat: this.regionConfig.marshHabitat,
 					road_stream_crossing: this.regionConfig.road_stream_crossing
                 }));
 
@@ -499,8 +532,10 @@ define([
 				var self = this;
 
 				this.$el.find('.region-label').html(region);
-				this.layers.selectedRegionGraphics.clear();
-
+				if (this.layers.selectedRegionGraphics) {
+					this.layers.selectedRegionGraphics.clear();	
+				}
+				
 				if (region === this.regionConfig.globalRegion) {
 					// TODO When initially activated, the region layer isn't loaded, so stats are unavailable
 					this.map.setExtent(this.defaultExtent);
@@ -537,7 +572,8 @@ define([
 			},
 
 			setMarshScenario: function(idx) {
-
+				this.idx = idx;
+				this.state = this.state.setSLRIdx(idx);
 				this.$el.find('.salt-marsh-control').attr('data-scenario-idx', idx);
 				var layerIds = this.regionConfig.scenarios.map(function(scenario) {
 					return scenario.layer;
@@ -560,7 +596,7 @@ define([
 				var idx = control.attr('data-scenario-idx');
 
 				_.each(this.regionConfig.stats, function(stat) {
-					var statLabel = stat.label.toLowerCase().replace(/ /g, '-');
+					var statLabel = stat.label.toLowerCase().replace(/ /g, '-').replace(/\//g, '-');
 					var regionStats;
 					if (self.region === self.regionConfig.globalRegion) {
 						regionStats = self.stats.global;
@@ -577,110 +613,95 @@ define([
 					}
 
 					self.$el.find("[data-stat='" + statLabel + "']").find('.number .value').html(value);
-					return;
 				});
-				
-
-
-				var wetlandValue = control.attr('data-scenario-wetlands');
-
-				
-/*
-				if (parseFloat(saltMarshValue) > 100) {
-					saltMarshValue = parseInt(saltMarshValue);
-				} else {
-					saltMarshValue = parseFloat(saltMarshValue).toFixed(1);
-				}
-
-				if (parseFloat(wetlandValue) > 100) {
-					wetlandValue = parseInt(wetlandValue);
-				} else {
-					wetlandValue = parseFloat(wetlandValue).toFixed(1);
-				}
-
-				this.$el.find('.current-salt-marsh .number .value').html(this.addCommas(saltMarshValue));
-				this.$el.find('.inland-wetlands .number .value').html(this.addCommas(wetlandValue));
-				this.$el.find('.roadcrossing-potential .number .value').html(this.addCommas(control.attr('data-scenario-barriers')));
-			*/
 			},
 
 			setState: function(data) {
-				console.log(data);
 				this.state = new State(data);
+				this.region = data.region;
+				this.slrIdx = data.slrIdx;
+				this.$el.find('#chosenRegion').val(data.region).trigger("chosen:updated");
 			},
 
-            getState: function() {
+            getState: function(data) {
                 return {
-                    region: this.state.getRegion(),
+                	slrIdx: this.state.getSLRIdx(),
+                    region: this.state.getRegion()
                 };
             },
 
 			getParcelByPoint: function(pt) {
 				var self = this;
-				this.qParcels.geometry = pt;
-				this.qtParcels.execute(this.qParcels, function(results) {
-					if (results.features.length) {
-						var parcel = self.selectedParcel = results.features[0];
-						var crossings = parcel.attributes.Crossings_100m_List.split(',');
+				if (this.regionConfig.parcelsLayer) {
+					this.qParcels.geometry = pt;
+					this.qtParcels.execute(this.qParcels, function(results) {
+						if (results.features.length) {
+							var parcel = self.selectedParcel = results.features[0];
+							var crossings = parcel.attributes.Crossings_100m_List.split(',');
 
-						self.$el.find('.parcel-label').show();
-						self.$el.find('#parcel-id').html(parcel.attributes.Parcel_Name);
-						self.$el.find('.region-label').html(parcel.attributes.Parcel_Name);
+							self.$el.find('.parcel-label').show();
+							self.$el.find('#parcel-id').html(parcel.attributes.Parcel_Name);
+							self.$el.find('.region-label').html(parcel.attributes.Parcel_Name);
 
-						self.updateStatistics();
+							self.updateStatistics();
 
-						self.layers.selectedRegionGraphics.clear();
-						self.layers.parcelGraphics.clear();
-						self.layers.crossingGraphics.clear();
-						var highlightGraphic = new Graphic(parcel.geometry, self.highlightParcelSymbol);
-						self.layers.parcelGraphics.add(highlightGraphic);
+							self.layers.selectedRegionGraphics.clear();
+							self.layers.parcelGraphics.clear();
+							self.layers.crossingGraphics.clear();
+							var highlightGraphic = new Graphic(parcel.geometry, self.highlightParcelSymbol);
+							self.layers.parcelGraphics.add(highlightGraphic);
 
-						//self.setSelectedMarshByParcel(parcel.attributes.Parcel_ID_Unique);
-
-						// TODO Potential Race condition fix where clicking on a new parcel before this finishes loading
-						// TODO Selected Barriers don't show up in legend
-						self.qCrossings.where = "SiteID = '" + crossings.join("' OR SiteID = '") + "'";
-						self.qtCrossings.execute(self.qCrossings, function(crossing_result) {
-							_.each(crossing_result.features, function(feature) {
-								var crossingGraphic = new Graphic(feature.geometry, self.selectedBarrierSymbol);
-								self.layers.crossingGraphics.add(crossingGraphic);
-							});
-							if (crossing_result.features.length) {
-								$('.selected-barrier-lgnd').show();
-							} else {
-								$('.selected-barrier-lgnd').hide();
+							if (parseInt(self.regionConfig.parcelsLayer)) {
+								self.setSelectedMarshByParcel(parcel.attributes.Parcel_ID_Unique);
 							}
-							self.map.resize();
-						});
 
-					} else {
-						self.$el.find('.parcel-label').hide();
-						self.selectedParcel = null;
-					}
-					
-				});
+							// TODO Potential Race condition fix where clicking on a new parcel before this finishes loading
+							// TODO Selected Barriers don't show up in legend
+							if (parseInt(this.regionConfig.road_stream_crossing)) {
+								self.qCrossings.where = "SiteID = '" + crossings.join("' OR SiteID = '") + "'";
+								self.qtCrossings.execute(self.qCrossings, function(crossing_result) {
+									_.each(crossing_result.features, function(feature) {
+										var crossingGraphic = new Graphic(feature.geometry, self.selectedBarrierSymbol);
+										self.layers.crossingGraphics.add(crossingGraphic);
+									});
+									if (crossing_result.features.length) {
+										$('.selected-barrier-lgnd').show();
+									} else {
+										$('.selected-barrier-lgnd').hide();
+									}
+									self.map.resize();
+								});
+							}
+						} else {
+							self.$el.find('.parcel-label').hide();
+							self.selectedParcel = null;
+						}
+						
+					});
+				}
 			},
 
 			setSelectedMarshByParcel: function(parcelId) {
-				return;
-				/*if (parcelId) {
-					var marshHabitatParcelsDefinitions = [];
-					marshHabitatParcelsDefinitions[6] = "Parcel_ID_Unique = " + parcelId;
-					marshHabitatParcelsDefinitions[2] = "Parcel_ID_Unique = " + parcelId;
-					marshHabitatParcelsDefinitions[3] = "Parcel_ID_Unique = " + parcelId;
-					marshHabitatParcelsDefinitions[4] = "Parcel_ID_Unique = " + parcelId;
-					marshHabitatParcelsDefinitions[5] = "Parcel_ID_Unique = " + parcelId;
-					this.layers.marshHabitatParcels.setLayerDefinitions(marshHabitatParcelsDefinitions);
-					this.layers.marshHabitatParcels.setVisibility(true);
+				if (parseInt(this.regionConfig.parcelsLayer)) {
+					if (parcelId) {
+						var marshHabitatParcelsDefinitions = [];
+						marshHabitatParcelsDefinitions[6] = "Parcel_ID_Unique = " + parcelId;
+						marshHabitatParcelsDefinitions[2] = "Parcel_ID_Unique = " + parcelId;
+						marshHabitatParcelsDefinitions[3] = "Parcel_ID_Unique = " + parcelId;
+						marshHabitatParcelsDefinitions[4] = "Parcel_ID_Unique = " + parcelId;
+						marshHabitatParcelsDefinitions[5] = "Parcel_ID_Unique = " + parcelId;
+						this.layers.marshHabitatParcels.setLayerDefinitions(marshHabitatParcelsDefinitions);
+						this.layers.marshHabitatParcels.setVisibility(true);
 
-					var non_tidal_wetlands_Definitions = [];
-					non_tidal_wetlands_Definitions[7] = "Parcel_ID_Unique = " + parcelId;
-					//this.layers.non_tidal_wetlands_parcels.setLayerDefinitions(non_tidal_wetlands_Definitions);
-					//this.layers.non_tidal_wetlands_parcels.setVisibility(true);
-				} else {
-					//this.layers.non_tidal_wetlands_parcels.setVisibility(false);
-					//this.layers.marshHabitatParcels.setVisibility(false);
-				}*/
+						var non_tidal_wetlands_Definitions = [];
+						non_tidal_wetlands_Definitions[7] = "Parcel_ID_Unique = " + parcelId;
+						//this.layers.non_tidal_wetlands_parcels.setLayerDefinitions(non_tidal_wetlands_Definitions);
+						//this.layers.non_tidal_wetlands_parcels.setVisibility(true);
+					} else {
+						//this.layers.non_tidal_wetlands_parcels.setVisibility(false);
+						//this.layers.marshHabitatParcels.setVisibility(false);
+					}
+				}
 			},
 
 			// http://stackoverflow.com/questions/2646385/add-a-thousands-separator-to-a-total-with-javascript-or-jquery

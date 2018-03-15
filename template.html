@@ -41,7 +41,7 @@
 		<% } else { %>
 			Conservation measures for
 		<% } %>
-		<span class="region-label"><%= globalRegion %></span></h3>
+		<span class="region-label"><%= region %></span></h3>
 
 		<div class="salt-marsh-control" data-scenario-idx="0">
 			<strong>Sea Level Rise Prediction</strong>
@@ -62,7 +62,7 @@
 	<div class="stats">
 
 		<% _.each(stats, function(stat) { %>
-			<div class="stat active current-salt-marsh" data-stat="<%= stat.label.toLowerCase().replace(/ /g, '-') %>">
+			<div class="stat active current-salt-marsh" data-stat="<%= stat.label.toLowerCase().replace(/ /g, '-').replace(/\//g, '-') %>">
 				<div class="pill">
 					<div class="number">
 						<div class="icon <%= stat.icon %>"></div>
