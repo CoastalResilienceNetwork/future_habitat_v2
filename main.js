@@ -362,7 +362,6 @@ define([
 					});
 					this.map.addLayer(this.layers.regionGraphics);
 
-
 					// We use snapshot mode because we need all the features locally for querying attributes
 					this.layers.regions = new FeatureLayer(this.regionConfig.regionService, {
 						mode: FeatureLayer.MODE_SNAPSHOT,
