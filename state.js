@@ -16,7 +16,6 @@ define([
             },
 
             getState: function() {
-                console.log(this.savedState)
                 return this.savedState;
             },
 
@@ -31,8 +30,6 @@ define([
             },
 
             setSLRIdx: function(slrIdx) {
-
-                console.log('setting slr', slrIdx)
                 return this.clone({
                     slrIdx: slrIdx
                 });
