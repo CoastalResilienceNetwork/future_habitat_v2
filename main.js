@@ -67,6 +67,7 @@ define([
 			marshScenarioIdx: null,
 
 			initialize: function(frameworkParameters) {
+				console.log('init')
 				declare.safeMixin(this, frameworkParameters);
 				this.state = new State({});
 				this.$el = $(this.container);
@@ -105,6 +106,7 @@ define([
 
 				var regionQuery = new Query();
                 var queryTask = new QueryTask(this.regionConfig.service + '/' + this.regionConfig.regionLayer);
+                console.log('region query', this.regionConfig.service + '/' + this.regionConfig.regionLayer);
                 regionQuery.where = '1=1';
                 regionQuery.returnGeometry = false;
                 regionQuery.outFields = ['*'];
@@ -143,7 +145,7 @@ define([
 					new Color([255, 255, 255, 0.0])
 				);
 				$(this.legendContainer).html('<div class="selected-barrier-lgnd" style="display: none;"><svg width="20" height="20"><circle fill="rgb(225, 96, 82)" stroke="rgb(255, 235, 59)" stroke-width="3" cx="10" cy="10" r="7"></circle></svg> <span style="position: relative; top:-5px;">Selected Barrier</span></div>');
-
+				console.log('end init')
 				return this;
 			},
 
@@ -151,7 +153,9 @@ define([
 				var self = this;
 				var transformedData = {};
 				var globalStats = {};
+				console.log('data', data, data.features);
 				$.each(data.features, function(idx, datum) {
+					console.log('idx', idx, datum);
 					transformedData[datum.attributes[self.regionConfig.regionAttributeLabel]] = datum.attributes;
 					$.each(Object.keys(datum.attributes), function(idx, key) {
 						globalStats[key] = globalStats[key] + datum.attributes[key] || datum.attributes[key];
@@ -264,6 +268,7 @@ define([
 			// TODO Clean up legend labels for selected features
 
 			activate: function() {
+				console.log('activate')
 				var self = this;
 
 				// Only set the extent the first time the app is activated
@@ -594,7 +599,7 @@ define([
 				var self = this;
 				var control = this.$el.find('.salt-marsh-control');
 				var idx = control.attr('data-scenario-idx');
-
+				console.log('stats', self.stats)
 				_.each(this.regionConfig.stats, function(stat) {
 					var statLabel = stat.label.toLowerCase().replace(/ /g, '-').replace(/\//g, '-');
 					var regionStats;
