@@ -83,20 +83,20 @@ define([
 				$(this.printButton).hide();
 
 				// Setup query handles
-				if (parseInt(this.regionConfig.parcelsLayer)) {
+				if (Number.isInteger(this.regionConfig.parcelsLayer)) {
 					this.qtParcels = new QueryTask(this.regionConfig.service + '/' + this.regionConfig.parcelsLayer);
 					this.qParcels = new Query();
 					this.qParcels.returnGeometry = true;
 					this.qParcels.outFields = ['*'];
 				}
 				
-				if (parseInt(this.regionConfig.road_stream_crossing)) {
+				if (Number.isInteger(this.regionConfig.road_stream_crossing)) {
 					this.qtCrossings = new QueryTask(this.regionConfig.service + '/' + this.regionConfig.road_stream_crossing);
 					this.qCrossings = new Query();
 					this.qCrossings.returnGeometry = true;
 				}
 
-				/*if (parseInt(this.regionConfig.regionLayer))  {
+				/*if (Number.isInteger(this.regionConfig.regionLayer))  {
 					this.qtRegions = new QueryTask(this.regionConfig.service + '/' + this.regionConfig.regionLayer);
 					this.qRegions = new Query();
 					this.qRegions.outFields = ['*'];
@@ -148,6 +148,7 @@ define([
 			},
 
 			processRegionStats: function(data) {
+				console.log(data)
 				var self = this;
 				var transformedData = {};
 				var globalStats = {};
@@ -288,7 +289,7 @@ define([
 					this.map.addLayer(this.layers.lidar);
 				}
 
-				if (parseInt(this.regionConfig.current_conservation_lands) && !this.layers.current_conservation_lands) {
+				if (Number.isInteger(this.regionConfig.current_conservation_lands) && !this.layers.current_conservation_lands) {
 					this.layers.current_conservation_lands = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
 					});
@@ -296,7 +297,7 @@ define([
 					this.map.addLayer(this.layers.current_conservation_lands);
 				}
 				
-				if (parseInt(this.regionConfig.wildlife_habitat) && !this.layers.wildlife_habitat) {
+				if (Number.isInteger(this.regionConfig.wildlife_habitat) && !this.layers.wildlife_habitat) {
 					this.layers.wildlife_habitat = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
 					});
@@ -304,7 +305,7 @@ define([
 					this.map.addLayer(this.layers.wildlife_habitat);
 				}
 
-				if (parseInt(this.regionConfig.non_tidal_wetlands) && !this.layers.non_tidal_wetlands) {
+				if (Number.isInteger(this.regionConfig.non_tidal_wetlands) && !this.layers.non_tidal_wetlands) {
 					this.layers.non_tidal_wetlands = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
 					});
@@ -323,7 +324,7 @@ define([
 				// NOTE There is an ESRI bug where some pixels render on the canvas before the minscale
 				// I've "fixed" this bug by hiding the canvas layer in css before the minScale is reached
 				// If adjusting the scale, update the css
-				if (parseInt(this.regionConfig.parcels) && !this.layers.parcels) {
+				if (this.regionConfig.parcels && !this.layers.parcels) {
 					this.layers.parcels = new VectorTileLayer(this.regionConfig.parcels, {
 						id: "mainMapParcelVector",
 						minScale: 36111.911040
@@ -335,10 +336,11 @@ define([
 						minScale: 36111.911040
 					});
 					this.map.addLayer(this.layers.parcelGraphics);
+					console.log(this.layers.parcelGraphics)
 				}
 
-				if (parseInt(this.regionConfig.road_stream_crossing) && !this.layers.road_stream_crossing) {
-
+				if (Number.isInteger(this.regionConfig.road_stream_crossing) && !this.layers.road_stream_crossing) {
+					console.log('road stresamasdmflksd')
 					this.layers.road_stream_crossing = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
 					});
@@ -401,7 +403,7 @@ define([
 							self.regionGraphics.clear();
 						}*/
 
-						if (parseInt(self.regionConfig.parcelsLayer)) {
+						if (Number.isInteger(self.regionConfig.parcelsLayer)) {
 							if (z.level >= 13) {
 								self.$el.find('.parcel-label').show();
 								self.$el.find('#parcel-id').show();
@@ -424,7 +426,7 @@ define([
 					var zoom = self.map.getZoom();
 					if (zoom >= 14) {
 
-						if (this.regionConfig.parcelsLayer) {
+						if (self.regionConfig.parcelsLayer) {
 							self.getParcelByPoint(e.mapPoint);
 						}
 					}
@@ -651,13 +653,13 @@ define([
 							var highlightGraphic = new Graphic(parcel.geometry, self.highlightParcelSymbol);
 							self.layers.parcelGraphics.add(highlightGraphic);
 
-							if (parseInt(self.regionConfig.parcelsLayer)) {
+							if (Number.isInteger(self.regionConfig.parcelsLayer)) {
 								self.setSelectedMarshByParcel(parcel.attributes.Parcel_ID_Unique);
 							}
 
 							// TODO Potential Race condition fix where clicking on a new parcel before this finishes loading
 							// TODO Selected Barriers don't show up in legend
-							if (parseInt(this.regionConfig.road_stream_crossing)) {
+							if (Number.isInteger(self.regionConfig.road_stream_crossing)) {
 								self.qCrossings.where = "SiteID = '" + crossings.join("' OR SiteID = '") + "'";
 								self.qtCrossings.execute(self.qCrossings, function(crossing_result) {
 									_.each(crossing_result.features, function(feature) {
@@ -682,8 +684,8 @@ define([
 			},
 
 			setSelectedMarshByParcel: function(parcelId) {
-				if (parseInt(this.regionConfig.parcelsLayer)) {
-					if (parcelId) {
+				if (Number.isInteger(this.regionConfig.parcelsLayer)) {
+					/*if (parcelId) {
 						var marshHabitatParcelsDefinitions = [];
 						marshHabitatParcelsDefinitions[6] = "Parcel_ID_Unique = " + parcelId;
 						marshHabitatParcelsDefinitions[2] = "Parcel_ID_Unique = " + parcelId;
@@ -700,7 +702,7 @@ define([
 					} else {
 						//this.layers.non_tidal_wetlands_parcels.setVisibility(false);
 						//this.layers.marshHabitatParcels.setVisibility(false);
-					}
+					}*/
 				}
 			},
 
