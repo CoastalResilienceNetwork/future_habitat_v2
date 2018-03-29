@@ -187,8 +187,8 @@ define([
 
 				this.$el.find('.layer input').on('change', function(e) {
 					var checked = this.checked;
-					var layer = $(e.target).parents('.layer');
-
+					var layer = $(e.target).parents('.layer');                                     
+                                        
 					self.layers[$(this).data('layer')].setVisibility(checked);
 
 					if (checked) {
@@ -298,10 +298,13 @@ define([
 				}
 				
 				if (Number.isInteger(this.regionConfig.wildlife_habitat) && !this.layers.wildlife_habitat) {
-					this.layers.wildlife_habitat = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
-						visible: false
+					var wildlifeIPs = new ImageParameters();
+                                        wildlifeIPs.layerIds = [11];
+                                        wildlifeIPs.layerOption = ImageParameters.LAYER_OPTION_SHOW;	
+                                        this.layers.wildlife_habitat = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
+						visible: false,
+                                                "imageParameters" : wildlifeIPs
 					});
-					this.layers.wildlife_habitat.setVisibleLayers([this.regionConfig.wildlife_Habitat]);
 					this.map.addLayer(this.layers.wildlife_habitat);
 				}
 
@@ -309,6 +312,7 @@ define([
 					this.layers.non_tidal_wetlands = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
 					});
+                                        
 					this.layers.non_tidal_wetlands.setVisibleLayers([this.regionConfig.non_tidal_wetlands]);
 					this.map.addLayer(this.layers.non_tidal_wetlands);
 				}
@@ -346,7 +350,7 @@ define([
 					});
 					this.layers.road_stream_crossing.setVisibleLayers([0]);
 					this.map.addLayer(this.layers.road_stream_crossing);
-
+                             
 					this.layers.crossingGraphics = new esri.layers.GraphicsLayer({
 						minScale: 36111.911040
 					});
