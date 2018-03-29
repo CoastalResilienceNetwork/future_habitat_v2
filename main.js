@@ -148,7 +148,6 @@ define([
 			},
 
 			processRegionStats: function(data) {
-				console.log(data)
 				var self = this;
 				var transformedData = {};
 				var globalStats = {};
@@ -299,11 +298,11 @@ define([
 				
 				if (Number.isInteger(this.regionConfig.wildlife_habitat) && !this.layers.wildlife_habitat) {
 					var wildlifeIPs = new ImageParameters();
-                                        wildlifeIPs.layerIds = [11];
-                                        wildlifeIPs.layerOption = ImageParameters.LAYER_OPTION_SHOW;	
-                                        this.layers.wildlife_habitat = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
+                    wildlifeIPs.layerIds = [this.regionConfig.wildlife_habitat];
+                    wildlifeIPs.layerOption = ImageParameters.LAYER_OPTION_SHOW;	
+                    this.layers.wildlife_habitat = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false,
-                                                "imageParameters" : wildlifeIPs
+                        "imageParameters" : wildlifeIPs
 					});
 					this.map.addLayer(this.layers.wildlife_habitat);
 				}
@@ -340,11 +339,9 @@ define([
 						minScale: 36111.911040
 					});
 					this.map.addLayer(this.layers.parcelGraphics);
-					console.log(this.layers.parcelGraphics)
 				}
 
 				if (Number.isInteger(this.regionConfig.road_stream_crossing) && !this.layers.road_stream_crossing) {
-					console.log('road stresamasdmflksd')
 					this.layers.road_stream_crossing = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						visible: false
 					});
@@ -487,10 +484,10 @@ define([
 					globalRegion: this.regionConfig.globalRegion,
 					stats: this.regionConfig.stats,
 					lidar: this.regionConfig.lidar,
-					current_conservation_lands: this.regionConfig.current_conservation_lands,
-					wildlife_habitat: this.regionConfig.wildlife_habitat,
-					non_tidal_wetlands: this.regionConfig.non_tidal_wetlands,
-					road_stream_crossing: this.regionConfig.road_stream_crossing
+					current_conservation_lands: Number.isInteger(this.regionConfig.current_conservation_lands),
+					wildlife_habitat: Number.isInteger(this.regionConfig.wildlife_habitat),
+					non_tidal_wetlands: Number.isInteger(this.regionConfig.non_tidal_wetlands),
+					road_stream_crossing: Number.isInteger(this.regionConfig.road_stream_crossing)
                 }));
 
                 this.$el.find('#chosenRegion').chosen({
