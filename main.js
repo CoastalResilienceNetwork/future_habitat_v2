@@ -265,7 +265,7 @@ define([
 
 			activate: function() {
 				var self = this;
-
+				this.layers = {};
 				// Only set the extent the first time the app is activated
 				if (!this.initialized) {
 					this.initialized = true;
@@ -466,7 +466,7 @@ define([
 
 				// TODO: Cleanup map click events
 
-				this.layers = {};
+
 			},
 
 			render: function() {
