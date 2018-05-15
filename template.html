@@ -62,7 +62,7 @@
 	<div class="stats">
 
 		<% _.each(stats, function(stat) { %>
-			<div class="stat active current-salt-marsh" data-stat="<%= stat.label.toLowerCase().replace(/ /g, '-').replace(/\//g, '-') %>">
+			<div class="stat active" data-stat="<%= stat.label.toLowerCase().replace(/ /g, '-').replace(/\//g, '-') %>">
 				<div class="pill">
 					<div class="number">
 						<div class="icon <%= stat.icon %>"></div>
@@ -78,46 +78,6 @@
 			</div>
 		<% }); %>
 
-<!--
-		<div class="stat active current-salt-marsh">
-			<div class="pill">
-				<div class="number">
-					<div class="icon grass"></div>
-					<span class="value">22,371</span> <span class="units">acres</span>
-				</div>
-				<div class="description">Tidal Marsh Area</div>
-			</div>
-			<div class="stat-info">
-				<span class="fa fa-info-circle info" title="Displays the current and predicted size of tidal marshes visible on the map or selected in response to projected sea-level rise scenarios."></span>
-			</div>
-		</div>
-
-		<div class="stat inland-wetlands">
-			<div class="pill">
-				<div class="number">
-					<div class="icon bird"></div>
-					<span class="value">406,231</span> <span class="units">acres</span>
-				</div>
-				<div class="description">Non-Tidal<br>Wetlands Area</div>
-			</div>
-			<div class="stat-info">
-				<span class="fa fa-info-circle info" title="Displays current fresh water wetland areas. Indicates CURRENT CONDITIONS ONLY AND DOES NOT PREDICT potential FUTURE CONDITIONS WITH SEA LEVEL CHANGE. (Check the Non-Tidal Wetlands box below to view this information.)"></span>
-			</div>
-		</div>
-
-		<div class="stat roadcrossing-potential">
-			<div class="pill">
-				<div class="number">
-					<div class="icon fish"></div>
-					<span class="value">2,198</span>
-				</div>
-				<div class="description">Road Crossing<br>Barriers Nearby</div>
-			</div>
-			<div class="stat-info">
-				<span class="fa fa-info-circle info" title="Displays surveyed road crossings that have been identified as potential stream barriers within 300 feet of selected parcels. (Check the Road-Stream Crossing Barriers box below to view this information.)"></span>
-			</div>
-		</div>
--->
 	</div>
 
 	<div class="additional-layers">
@@ -142,6 +102,7 @@
 			</div>
 		</div>
 		<% } %>
+
 		
 		<% if (non_tidal_wetlands) { %>
 		<div class="layer">
