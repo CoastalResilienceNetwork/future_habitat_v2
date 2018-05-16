@@ -388,12 +388,12 @@ define([
 					});
 
 					this.layers.regions.on('click', function(e) {
+						self.region = e.graphic.attributes[self.regionConfig.regionAttributeLabel];
 						if (e.graphic.attributes[self.regionConfig.regionAttributeLabel] !== self.$el.find('#chosenRegion').val() && self.map.getZoom() < 14) {
+							self.statsFromParcel = false;
 							self.zoomToRegion(e.graphic.attributes[self.regionConfig.regionAttributeLabel]);
 						}
-
 						self.$el.find('#chosenRegion').val(e.graphic.attributes[self.regionConfig.regionAttributeLabel]).trigger("chosen:updated");
-
 					});
 
 					// Set marsh scenario.  Will default to 0 unless and share was used to initalize different values
@@ -693,7 +693,7 @@ define([
 
 			getParcelByPoint: function(pt) {
 				var self = this;
-				if (this.regionConfig.parcelsLayer) {
+				if (this.regionConfig.parcelsLayer && this.map.getZoom() >= 14) {
 					this.qParcels.geometry = pt;
 					this.qtParcels.execute(this.qParcels, function(results) {
 						if (results.features.length) {
