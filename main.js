@@ -4,8 +4,9 @@ define([
 	"esri/layers/VectorTileLayer",
 	"esri/layers/ArcGISTiledMapServiceLayer",
 	"esri/layers/ArcGISDynamicMapServiceLayer",
-	"esri/layers/WMSLayer",
-	"esri/layers/WMSLayerInfo",
+        "esri/layers/ArcGISImageServiceLayer",
+        "esri/layers/ImageServiceParameters", 
+        "esri/layers/RasterFunction",
 	"esri/layers/FeatureLayer",
 	"esri/layers/ImageParameters",
 	"esri/geometry/Extent",
@@ -17,20 +18,22 @@ define([
 	"esri/symbols/SimpleLineSymbol",
 	"esri/Color",
 	"esri/graphic",
-    "dojo/dom",
-    './State',
-    'dojo/text!./region.json',
-    'dojo/text!./print-setup.html',
-    "dojo/text!./print_template.html",
-    "dojo/text!./print_stat_template.html",
-    "dojo/text!./template.html",
+        "esri/config",
+        "dojo/dom",
+        './State',
+        'dojo/text!./region.json',
+        'dojo/text!./print-setup.html',
+        "dojo/text!./print_template.html",
+        "dojo/text!./print_stat_template.html",
+        "dojo/text!./template.html",
 	], function(declare,
 		PluginBase,
 		VectorTileLayer,
 		ArcGISTiledMapServiceLayer,
 		ArcGISDynamicMapServiceLayer,
-		WMSLayer,
-		WMSLayerInfo,
+		ArcGISImageServiceLayer,
+                ImageServiceParameters,
+                RasterFunction,
 		FeatureLayer,
 		ImageParameters,
 		Extent,
@@ -42,6 +45,7 @@ define([
 		SimpleLineSymbol,
 		Color,
 		Graphic,
+                esriConfig,
 		dom,
 		State,
 		RegionConfig,
@@ -67,6 +71,9 @@ define([
 			marshScenarioIdx: null,
 
 			initialize: function(frameworkParameters) {
+                                //turn off CORS - vector tile error - AGO doesn't support CORS
+                                esri.config.defaults.io.corsEnabledServers.push("https://tiles.arcgis.com");
+                                esri.config.defaults.io.corsEnabledServers.push("https://js.arcgis.com");
 				declare.safeMixin(this, frameworkParameters);
 				this.state = new State({});
 				this.$el = $(this.container);
@@ -105,11 +112,11 @@ define([
 				}*/
 
 				var regionQuery = new Query();
-                var queryTask = new QueryTask(this.regionConfig.service + '/' + this.regionConfig.regionLayer);
-                regionQuery.where = '1=1';
-                regionQuery.returnGeometry = false;
-                regionQuery.outFields = ['*'];
-                queryTask.execute(regionQuery, _.bind(this.processRegionStats, this));
+                                var queryTask = new QueryTask(this.regionConfig.service + '/' + this.regionConfig.regionLayer);
+                                regionQuery.where = '1=1';
+                                regionQuery.returnGeometry = false;
+                                regionQuery.outFields = ['*'];
+                                queryTask.execute(regionQuery, _.bind(this.processRegionStats, this));
 
 				// Setup graphic styles
 				
@@ -283,12 +290,28 @@ define([
 
 				// NOTE Order added here is important because it is draw order on the map
 				if (this.regionConfig.lidar && !this.layers.lidar) {
-					this.layers.lidar = new WMSLayer(this.regionConfig.lidar, {
-						visible: false,
-						visibleLayers: this.regionConfig.lidarLayers
-					});
-					this.map.addLayer(this.layers.lidar);
-				}
+                                    var params = new ImageServiceParameters();
+                                    var rasterFunction = new RasterFunction();
+                                    rasterFunction.functionName = "Hillshade";
+                                    rasterFunction.arguments = {
+                                        "Azimuth":215,
+                                        "Altitude":40,
+                                        "ZFactor":4,
+                                        "HillshadeType":0, //new at 10.5.1.  0 = traditional, 1 = multi-directional; default is 0.
+                                        "SlopeType": 1, //new at 10.2. 1=DEGREE, 2=PERCENTRISE, 3=SCALED. default is 1.	
+                                        "PSPower": 1,//new at 10.2. double, used together with SCALED slope type	
+                                        "PSZFactor" : 1,//new at 10.2. double, used together with SCALED slope type	
+                                        "RemoveEdgeEffect":true //new at 10.2. boolean, true of false 	
+                                    };
+                                    rasterFunction.variableName = "DEM";
+                                    params.renderingRule = rasterFunction;
+                                    this.layers.lidar = new ArcGISImageServiceLayer(this.regionConfig.lidar, {
+                                        imageServiceParameters: params,
+                                        visible: false,
+                                        visibleLayers: this.regionConfig.lidarLayers
+                                    });
+                                    this.map.addLayer(this.layers.lidar);
+                                }
 
 				if (Number.isInteger(this.regionConfig.current_conservation_lands) && !this.layers.current_conservation_lands) {
 					this.layers.current_conservation_lands = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
@@ -330,10 +353,11 @@ define([
 				// I've "fixed" this bug by hiding the canvas layer in css before the minScale is reached
 				// If adjusting the scale, update the css
 				if (this.regionConfig.parcels && !this.layers.parcels) {
-					this.layers.parcels = new VectorTileLayer(this.regionConfig.parcels, {
+					this.layers.parcels = new ArcGISDynamicMapServiceLayer(this.regionConfig.service, {
 						id: "mainMapParcelVector",
 						minScale: 36111.911040
 					});
+                                        this.layers.parcels.setVisibleLayers([this.regionConfig.parcelsLayer]);
 					this.map.addLayer(this.layers.parcels);
 
 					// TODO Clean this up when deactivated 
