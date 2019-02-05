@@ -4,7 +4,6 @@
 }
 
 /* Hack to fix bug in vectortile canvas layer */
-
 .map[data-zoom="0"] #map-0_mainMapParcelVector,
 .map[data-zoom="1"] #map-0_mainMapParcelVector,
 .map[data-zoom="2"] #map-0_mainMapParcelVector,
